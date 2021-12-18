@@ -1,9 +1,6 @@
-package top.lanscarlos.ranales.action.entity
+package top.lanscarlos.ranales.kether.entity
 
 import org.bukkit.entity.Entity
-import org.bukkit.entity.LivingEntity
-import taboolib.common.platform.function.info
-import taboolib.common.platform.function.warning
 import taboolib.module.kether.ScriptFrame
 
 object ActionEntityType: ActionEntity() {

@@ -1,9 +1,7 @@
-package top.lanscarlos.ranales.action
+package top.lanscarlos.ranales.kether
 
-import taboolib.common.platform.function.info
 import taboolib.common.platform.function.warning
 import taboolib.common.reflect.Reflex.Companion.getProperty
-import taboolib.common.reflect.Reflex.Companion.setProperty
 import taboolib.library.kether.SimpleReader
 import taboolib.module.kether.*
 

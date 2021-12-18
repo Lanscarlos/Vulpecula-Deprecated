@@ -1,11 +1,9 @@
-package top.lanscarlos.ranales.action.target
+package top.lanscarlos.ranales.kether.target
 
-import org.bukkit.Bukkit
-import taboolib.common.platform.function.info
 import taboolib.library.kether.ArgTypes
 import taboolib.module.kether.*
-import top.lanscarlos.ranales.action.target.filter.Filter
-import top.lanscarlos.ranales.action.target.selector.*
+import top.lanscarlos.ranales.kether.target.filter.Filter
+import top.lanscarlos.ranales.kether.target.selector.*
 import java.util.concurrent.CompletableFuture
 
 object ActionTarget {

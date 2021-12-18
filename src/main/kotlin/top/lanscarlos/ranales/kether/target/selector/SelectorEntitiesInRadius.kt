@@ -1,4 +1,4 @@
-package top.lanscarlos.ranales.action.target.selector
+package top.lanscarlos.ranales.kether.target.selector
 
 import org.bukkit.entity.Entity
 import taboolib.module.kether.*

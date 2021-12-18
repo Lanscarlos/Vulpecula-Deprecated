@@ -1,11 +1,9 @@
-package top.lanscarlos.ranales.action.target.filter
+package top.lanscarlos.ranales.kether.target.filter
 
-import taboolib.common.platform.function.info
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
 import taboolib.module.kether.ScriptFrame
-import taboolib.module.kether.script
 import java.util.concurrent.CompletableFuture
 
 object FilterForeach: Filter() {

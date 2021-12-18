@@ -1,4 +1,4 @@
-package top.lanscarlos.ranales.action.entity
+package top.lanscarlos.ranales.kether.entity
 
 import org.bukkit.entity.Entity
 import taboolib.library.kether.ArgTypes

@@ -1,8 +1,6 @@
-package top.lanscarlos.ranales.action.target.selector
+package top.lanscarlos.ranales.kether.target.selector
 
 import org.bukkit.Bukkit
-import taboolib.library.kether.ArgTypes
-import taboolib.library.kether.QuestReader
 import taboolib.module.kether.*
 
 object SelectorPlayer : Selector() {
