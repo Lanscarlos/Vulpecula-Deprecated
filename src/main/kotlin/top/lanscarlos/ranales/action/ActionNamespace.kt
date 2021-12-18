@@ -13,7 +13,7 @@ import taboolib.module.kether.*
  * */
 object ActionNamespace {
 
-    @KetherParser(["namespace"])
+    @KetherParser(["namespace"], shared = true)
     fun parser() = scriptParser {
         val namespace: MutableList<String> = when(it) {
             is SimpleReader -> it.namespace
