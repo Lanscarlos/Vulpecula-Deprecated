@@ -14,7 +14,7 @@ taboolib {
     install("module-chat")
     install("platform-bukkit")
     classifier = null
-    version = "6.0.5-9"
+    version = "6.0.6-24"
 }
 
 repositories {
