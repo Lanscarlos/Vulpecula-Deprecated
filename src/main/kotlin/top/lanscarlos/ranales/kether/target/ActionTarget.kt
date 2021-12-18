@@ -31,7 +31,7 @@ object ActionTarget {
                     }
                 }
             }
-            else -> error("unknown type!")
+            else -> error("unknown target action type!")
         }
     }
 }
