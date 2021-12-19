@@ -8,6 +8,10 @@ import taboolib.module.kether.*
 import taboolib.platform.type.BukkitPlayer
 import java.util.concurrent.CompletableFuture
 
+/**
+ * @author Lanscarlos
+ * @since 2021-12-18 08:51
+ * */
 abstract class ActionEntity {
 
     abstract fun parameters(): List<String>
