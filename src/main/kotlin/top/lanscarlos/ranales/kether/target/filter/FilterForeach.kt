@@ -6,6 +6,10 @@ import taboolib.library.kether.QuestReader
 import taboolib.module.kether.ScriptFrame
 import java.util.concurrent.CompletableFuture
 
+/**
+ * @author Lanscarlos
+ * @since 2021-12-18 19:56
+ * */
 object FilterForeach: Filter() {
 
     /*
@@ -20,7 +24,7 @@ object FilterForeach: Filter() {
         }
     }
 
-    override fun call(frame: ScriptFrame, arg: Any, targets: Collection<Any>): Collection<Any> {
+    override fun call(frame: ScriptFrame, arg: Any, targets: Collection<Any>, func: (targets: Collection<Any>) -> Collection<Any>): Collection<Any> {
         val map = arg as? Map<*, *> ?: error("Illegal Filter Data!")
         val key = map["key"]?.toString() ?: error("Filter Data key cannot be null!")
         val condition = map["condition"] as? ParsedAction<*> ?: error("Filter Data condition cannot be null!")
@@ -35,7 +39,11 @@ object FilterForeach: Filter() {
                 }
                 process(iterator)
             }else {
-                future.complete(set)
+                future.complete(
+                    func(
+                        set
+                    )
+                )
             }
         }
         process(set.iterator())

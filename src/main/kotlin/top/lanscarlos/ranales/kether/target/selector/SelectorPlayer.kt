@@ -3,6 +3,10 @@ package top.lanscarlos.ranales.kether.target.selector
 import org.bukkit.Bukkit
 import taboolib.module.kether.*
 
+/**
+ * @author Lanscarlos
+ * @since 2021-12-18 09:47
+ * */
 object SelectorPlayer : Selector() {
 
     override fun parameters(): List<String> {

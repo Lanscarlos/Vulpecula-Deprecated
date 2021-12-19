@@ -5,6 +5,10 @@ import taboolib.module.kether.*
 import taboolib.platform.type.BukkitPlayer
 import taboolib.platform.util.toBukkitLocation
 
+/**
+ * @author Lanscarlos
+ * @since 2021-12-18 10:05
+ * */
 object SelectorEntitiesInRadius : Selector() {
 
     override fun parameters(): List<String> {

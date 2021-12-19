@@ -9,6 +9,10 @@ import top.lanscarlos.ranales.kether.target.filter.Filter
 import java.lang.Exception
 import java.util.concurrent.CompletableFuture
 
+/**
+ * @author Lanscarlos
+ * @since 2021-12-18 09:35
+ * */
 abstract class Selector {
 
     abstract fun parameters(): List<String>
@@ -23,15 +27,14 @@ abstract class Selector {
         }
         val args = mutableMapOf<String, Any>()
 
-        val filter = try {
+        val filters = try {
             reader.mark()
             reader.expect("filter")
-            Filter.getFilter(reader.nextToken())?.let { Pair(it, it.parse(reader)) }
+            Filter.parser(reader)
         } catch (e: Exception) {
             reader.reset()
             null
         }
-
         return object : ScriptAction<Any>() {
             override fun run(frame: ScriptFrame): CompletableFuture<Any> {
                 val future = CompletableFuture<Any>()
@@ -46,7 +49,16 @@ abstract class Selector {
                         val targets = call(frame, args) ?: return
                         when(targets) {
                             is Collection<*> -> {
-                                future.complete(filter?.first?.call(frame, filter.second, targets.filterNotNull()) ?: targets)
+//                                future.complete(filter?.first?.call(frame, filter.second, targets.filterNotNull()) ?: targets)
+                                future.complete(
+                                    filters?.let {
+                                        Filter.resolve(
+                                            frame,
+                                            filters.map { it }.toMutableList(),
+                                            targets.filterNotNull()
+                                        )
+                                    } ?: targets
+                                )
                             }
                             else -> future.complete(targets)
                         }
