@@ -22,12 +22,13 @@ object ActionNamespace {
             "add", "remove", "list"
         )) {
             "add" -> {
-                namespace += it.nextToken().lowercase()
+                val name = it.nextToken().lowercase()
+                if (name !in namespace) namespace += name
             }
             "remove" -> {
                 val name = it.nextToken().lowercase()
-                if (name == "kether") warning("Can not remove namespace \"kether\"!")
-                namespace -= name
+                if (name == "kether") warning("Can not remove default namespace \"kether\"!")
+                if (name in namespace) namespace -= name
             }
             "list" -> {  }
             else -> warning("Unknown type of namespace action!")
