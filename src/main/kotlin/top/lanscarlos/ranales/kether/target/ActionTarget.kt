@@ -12,14 +12,20 @@ import java.util.concurrent.CompletableFuture
  * */
 object ActionTarget {
 
+    fun foreach() {
+
+    }
+
     @KetherParser(["target"], namespace = "ranales", shared = true)
     fun parser() = scriptParser {
         when(it.expects(
             "sel", "select", "selector",
-            "filter"
+            "filter",
+            "foreach"
         )) {
             "sel", "select", "selector" -> Selector.getSelector(it.nextToken())?.parse(it) ?: error("unknown target selector!")
             "filter" -> Filter.resolve(it)
+            "foreach" -> TargetForeach.resolve(it)
             else -> error("unknown target action type!")
         }
     }

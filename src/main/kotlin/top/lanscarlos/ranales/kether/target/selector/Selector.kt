@@ -5,6 +5,7 @@ import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
 import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.ScriptFrame
+import top.lanscarlos.ranales.kether.target.TargetForeach
 import top.lanscarlos.ranales.kether.target.filter.Filter
 import java.lang.Exception
 import java.util.concurrent.CompletableFuture
@@ -35,6 +36,16 @@ abstract class Selector {
             reader.reset()
             null
         }
+
+        val foreach = try {
+            reader.mark()
+            reader.expect("foreach")
+            TargetForeach.parse(reader)
+        } catch (e: Exception) {
+            reader.reset()
+            null
+        }
+
         return object : ScriptAction<Any>() {
             override fun run(frame: ScriptFrame): CompletableFuture<Any> {
                 val future = CompletableFuture<Any>()
@@ -51,13 +62,15 @@ abstract class Selector {
                             is Collection<*> -> {
 //                                future.complete(filter?.first?.call(frame, filter.second, targets.filterNotNull()) ?: targets)
                                 future.complete(
-                                    filters?.let {
+                                    (filters?.let {
                                         Filter.resolve(
                                             frame,
                                             filters.map { it }.toMutableList(),
                                             targets.filterNotNull()
                                         )
-                                    } ?: targets
+                                    } ?: targets).also {
+                                        foreach?.let { args -> TargetForeach.resolve(frame, args, it.filterNotNull()) }
+                                    }
                                 )
                             }
                             else -> future.complete(targets)
