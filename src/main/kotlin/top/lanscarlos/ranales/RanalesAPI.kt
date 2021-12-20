@@ -1,18 +1,13 @@
 package top.lanscarlos.ranales
 
 import org.bukkit.Bukkit
-import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.function.adaptCommandSender
 import taboolib.common.platform.function.getDataFolder
-import taboolib.common.platform.function.info
 import taboolib.common.platform.function.releaseResourceFile
 import taboolib.library.kether.QuestContext
 import taboolib.module.kether.*
 import taboolib.module.lang.sendLang
-import taboolib.platform.util.sendLang
-import top.lanscarlos.ranales.command.CommandRanales
 import java.io.File
 import java.util.concurrent.CompletableFuture
 
@@ -50,7 +45,8 @@ object RanalesAPI {
     }
 
     fun runScript(file: String, sender: Any? = null, viewer: String? = null, args: QuestContext.VarTable) {
-        runScript(file, sender, viewer, args.keys().associateWith { args.get<Any>(it) })
+        val data = args.keys().filter { args.get<Any>(it).isPresent }.associateWith { args.get<Any>(it).get() }
+        runScript(file, sender, viewer, data)
     }
 
     fun runScript(file: String, sender: Any? = null, viewer: String? = null, args: Map<String, Any>) {
