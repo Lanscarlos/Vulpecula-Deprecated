@@ -1,5 +1,6 @@
 package top.lanscarlos.ranales.kether.target.filter
 
+import taboolib.common.platform.function.info
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
@@ -14,19 +15,24 @@ object FilterForeach: Filter() {
 
     /*
     * target filter {targets} {type} [ {parameter} ]
-    * target filter &targets foreach i to check entity &i type == *husk
+    * target filter &targets foreach by i { check entity &i type == *husk }
     * */
     override fun parse(reader: QuestReader): Any {
         return mutableMapOf<String, Any>().also {
-            it["key"] = reader.nextToken()
-            reader.expect("by")
+            try {
+                reader.mark()
+                reader.expect("by")
+                it["key"] = reader.nextToken()
+            } catch (e: Exception) {
+                reader.reset()
+            }
             it["condition"] = reader.next(ArgTypes.ACTION)
         }
     }
 
     override fun call(frame: ScriptFrame, arg: Any, targets: Collection<Any>, func: (targets: Collection<Any>) -> Collection<Any>): Collection<Any> {
         val map = arg as? Map<*, *> ?: error("Illegal Filter Data!")
-        val key = map["key"]?.toString() ?: error("Filter Data key cannot be null!")
+        val key = map["key"]?.toString() ?: "it"
         val condition = map["condition"] as? ParsedAction<*> ?: error("Filter Data condition cannot be null!")
         val future = CompletableFuture<Collection<Any>>()
         val set = targets.toMutableSet()
@@ -39,6 +45,7 @@ object FilterForeach: Filter() {
                 }
                 process(iterator)
             }else {
+                frame.variables().remove(key)
                 future.complete(
                     func(
                         set
