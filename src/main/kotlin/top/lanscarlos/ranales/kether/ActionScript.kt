@@ -46,7 +46,9 @@ object ActionScript {
     }
 
     fun parse(reader: QuestReader): ScriptAction<Any> {
-        return when(val token = reader.expects("run", "reload", "stop")) {
+        return when(val token = reader.expects(
+            "run", "stop", "reload", "list"
+        )) {
             "run" -> {
                 val file = reader.next(ArgTypes.ACTION)
                 resolve {
@@ -64,7 +66,7 @@ object ActionScript {
                 }
                 resolve { stop(it, id) }
             }
-            "load", "reload" -> resolve { load() }
+            "reload" -> resolve { load() }
             "list" -> resolve { list() }
             else -> error("Unknown script action type: $token")
         }
