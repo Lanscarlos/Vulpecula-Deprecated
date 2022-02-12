@@ -29,10 +29,10 @@ object RanalesAPI {
         workspace
     }
 
-    fun eval(script: String, sender: Any?, namespace: List<String> = listOf("ranales"), data: Map<String, Any> = mapOf()): CompletableFuture<Any?> {
+    fun eval(script: String, sender: Any?, namespace: List<String> = listOf("ranales"), args: Map<String, Any?> = mapOf()): CompletableFuture<Any?> {
         return try {
             KetherShell.eval(script, sender = sender?.let { adaptCommandSender(it) }, namespace = namespace, context= {
-                data.forEach { (k, v) -> set(k, v) }
+                args.forEach { (k, v) -> set(k, v) }
             })
         } catch (e: Exception) {
             e.printKetherErrorMessage()
@@ -49,7 +49,7 @@ object RanalesAPI {
         runScript(file, sender, viewer, data)
     }
 
-    fun runScript(file: String, sender: Any? = null, viewer: String? = null, args: Map<String, Any>) {
+    fun runScript(file: String, sender: Any? = null, viewer: String? = null, args: Map<String, Any?>) {
         val script = workspace.scripts[file]
         if (script != null) {
             val context = ScriptContext.create(script) {

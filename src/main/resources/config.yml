@@ -1,31 +1,11 @@
 
-# 监听器设置
-listener-setting:
-  # 注册监听器
-  register:
-    entity-damage:
-      # 是否启用 [ 默认为 true ]
-      enable: true
-      # 别名
-      aliases: [ 'entity-damage-event' ]
-      # 事件类的完整包名路径
-      # Bukkit中的事件详情见 https://bukkit.windit.net/javadoc/org/bukkit/event/package-summary.html
-      class: 'org.bukkit.event.entity.EntityDamageEvent'
-      # 事件优先级 [ 默认为 NORMAL ]
-      # 优先级越低，越先被处理
-      # 详情见 https://bukkit.windit.net/javadoc/org/bukkit/event/EventPriority.html#MONITOR
-      # MONITOR -> 没有修改的事件的优先级应该比这个低
-      # LOWEST -> 优先级最低
-      # LOW -> 优先级低
-      # NORMAL -> 默认优先级
-      # HIGH -> 优先级高
-      # HIGHEST -> 优先级最高
-      priority: 'NORMAL'
-      # 是否忽略已被取消的事件 [ 默认为 true ]
-      ignore-cancelled: true
-    player-join:
-      enable: true
-      aliases: [ 'on-join', 'join' ]
-      class: 'org.bukkit.event.player.PlayerJoinEvent'
-      priority: 'NORMAL'
-      ignore-cancelled: true
+# 调试设置
+debug-setting:
+  enable: true
+  # 级别越高，显示内容越多
+  level: 5
+  # 需要 debug 的模块
+  modules:
+    ListenerRegistrator: true
+    ListenerRegistrator$Companion: true
+    ALL: false

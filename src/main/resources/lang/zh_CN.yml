@@ -1,0 +1,25 @@
+Plugin-UnsupportedVersion: '&8[&3Ranales&8] &cERROR &8| &cPlugin does not support this outdated Minecraft version'
+Plugin-Loading: '&8[&3Ranales&8] &bINFO &8| &7Loading... &f{0}'
+Plugin-Enabled: '&8[&3Ranales&8] &bINFO &8| &3Plugin has been enabled. Currently running version &2{0}&7.'
+Plugin-Reloaded: '&8[&3Ranales&8] &bINFO &8| &3Plugin has been reloaded.'
+
+Registrators-Loaded: '&8[&3Ranales&8] &aFINE &8| &a{0}&3 registrators were loaded &8({1} ms)'
+Handlers-Loaded: '&8[&3Ranales&8] &aFINE &8| &a{0}&3 handles were loaded &8({1} ms)'
+
+command-script-error:
+  - '&8[&3Ranales&8] &7在运行脚本时发生了错误:'
+  - '&8[&3Ranales&8] &7{0}'
+command-script-not-found: '&8[&3Ranales&8] &7脚本不存在.'
+command-script-not-running: '&8[&3Ranales&8] &7脚本未在运行.'
+command-script-list-all:
+  - '&8[&3Ranales&8] &7所有脚本: &f{0}'
+  - '&8[&3Ranales&8] &7运行脚本: &f{1}'
+command-script-reload-all:
+  - '&8[&3Ranales&8] &7重载完成.'
+
+command-debug-on-already: '&8[&3Ranales&8] &7调试模块 &3{0} &7已经启动！请勿重复操作！'
+command-debug-on-success: '&8[&3Ranales&8] &7正在启动调试模块 &3{0}'
+command-debug-on-fail: '&8[&3Ranales&8] &7无法加载调试模块 &3{0}'
+command-debug-on: '&8[&3Ranales&8] &7已开启调试模式！'
+command-debug-off: '&8[&3Ranales&8] &7已关闭调试模式！'
+command-debug-clear: '&8[&3Ranales&8] &7已关闭调试模式并释放相关资源！'

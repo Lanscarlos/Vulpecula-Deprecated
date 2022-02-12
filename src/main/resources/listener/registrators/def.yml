@@ -1,0 +1,57 @@
+entity-damage:
+  # 是否启用 [ 默认为 true ]
+  enable: false
+  # 别名
+  aliases: [ 'entity-damage-event' ]
+  # 事件类的完整包名路径
+  # Bukkit中的事件详情见 https://bukkit.windit.net/javadoc/org/bukkit/event/package-summary.html
+  class: 'org.bukkit.event.entity.EntityDamageEvent'
+  # 事件优先级 [ 默认为 NORMAL ]
+  # 优先级越低，越先被处理
+  # 详情见 https://bukkit.windit.net/javadoc/org/bukkit/event/EventPriority.html#MONITOR
+  # MONITOR -> 没有修改的事件的优先级应该比这个低
+  # LOWEST -> 优先级最低
+  # LOW -> 优先级低
+  # NORMAL -> 默认优先级
+  # HIGH -> 优先级高
+  # HIGHEST -> 优先级最高
+  priority: 'NORMAL'
+  # 是否忽略已被取消的事件 [ 默认为 true ]
+  ignore-cancelled: true
+  # 预处理
+  # 在执行所有脚本前对事件进行预处理
+  # 若在预处理中 将事件取消，则不会执行后续的脚本
+  preprocessing:
+    # 脚本执行顺序
+    # 默认顺序 js -> kether -> script
+    run-priority:
+      - js
+      - kether
+      - script
+    kether: |-
+      print *preprocessing...
+    js: |-
+      args.put("player", event.getPlayer())
+      args.put("playerName", event.getPlayer().getName())
+    script:
+      - 'example.ks'
+  # 定义参数
+  # 用于将事件中的一些属性转换为 kether 语句方便访问的参数
+  # 所有参数均通过解析成 javascript 来获得
+  # 考虑到解析 javascript 的耗能问题，参数太多情况下建议在预处理中定义参数
+  # 默认参数
+  # event - 事件对象
+  # player - 玩家对象，仅在 PlayerEvent 中生效
+  # entity - 实体对象，仅在 EntityEvent 中生效
+  parameters:
+    playerName: player.getName()
+
+player-join:
+  enable: true
+  aliases: [ 'on-join', 'join' ]
+  class: 'org.bukkit.event.player.PlayerJoinEvent'
+  priority: 'NORMAL'
+  ignore-cancelled: true
+  preprocessing:
+    kether: |-
+      print *preprocessing...
