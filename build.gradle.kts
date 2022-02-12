@@ -1,6 +1,6 @@
 plugins {
     java
-    id("io.izzel.taboolib") version "1.31"
+    id("io.izzel.taboolib") version "1.34"
     id("org.jetbrains.kotlin.jvm") version "1.5.10"
 }
 
@@ -13,15 +13,20 @@ taboolib {
     install("module-configuration")
     install("module-chat")
     install("platform-bukkit")
+    install("expansion-javascript")
     classifier = null
-    version = "6.0.6-24"
+    version = "6.0.7-26"
 }
 
 repositories {
+    maven { url = uri("https://repo.tabooproject.org/repository/releases/") }
     mavenCentral()
 }
 
 dependencies {
+    implementation("org.tabooproject.reflex:analyser:1.0.6")
+    implementation("org.tabooproject.reflex:reflex:1.0.6") // 需要 analyser 模块
+
     compileOnly("ink.ptms:nms-all:1.0.0")
     compileOnly("ink.ptms.core:v11701:11701:mapped")
     compileOnly("ink.ptms.core:v11701:11701:universal")
