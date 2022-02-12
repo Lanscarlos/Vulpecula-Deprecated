@@ -1,0 +1,17 @@
+prefix: '&8[&cRanales-Debug&8]&r '
+debug:
+  on-active-run:
+    level: 2
+    message: 'onActive() was running'
+  register-listener:
+    level: 2
+    message: 'registering listener {0}'
+  handler-loading:
+    level: 3
+    message: '○ Loading Listener Handler &3{0}'
+  handler-enable:
+    level: 3
+    message: '├- Handler &3{0}&r enable &a√'
+  handler-loaded:
+    level: 2
+    message: '└- Handler &3{0}&r loaded successfully！'
