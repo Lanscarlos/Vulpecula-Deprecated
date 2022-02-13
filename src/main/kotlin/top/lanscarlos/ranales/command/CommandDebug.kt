@@ -4,7 +4,7 @@ import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBuilder
 import taboolib.common.platform.command.subCommand
 import taboolib.module.lang.sendLang
-import top.lanscarlos.ranales.internal.Debug
+import top.lanscarlos.ranales.internal.debug.Debug
 
 /**
  * @author Lanscarlos
@@ -15,13 +15,14 @@ object CommandDebug {
     val command = subCommand {
         literal("on", literal = on)
         literal("off", literal = off)
+        literal("remove", literal = remove)
         literal("clear", literal = clear)
     }
 
     private val on: CommandBuilder.CommandComponentLiteral.() -> Unit = {
         dynamic(commit = "file", optional = true) {
             suggestion<ProxyCommandSender> { _, _ ->
-                Debug.resources.map { it.key }
+                Debug.resources.filter { it.key !in Debug.modules }.map { it.key }
             }
             execute<ProxyCommandSender> { sender, _, argument ->
                 if (argument in Debug.modules) {
@@ -48,6 +49,18 @@ object CommandDebug {
         execute<ProxyCommandSender> { sender, _, _ ->
             Debug.enable = false
             sender.sendLang("command-debug-off")
+        }
+    }
+
+    private val remove: CommandBuilder.CommandComponentLiteral.() -> Unit = {
+        dynamic(commit = "file", optional = false) {
+            suggestion<ProxyCommandSender> { _, _ ->
+                Debug.modules.map { it.key }
+            }
+            execute<ProxyCommandSender> { sender, _, argument ->
+                Debug.remove(argument)
+                sender.sendLang("command-debug-remove", argument)
+            }
         }
     }
 

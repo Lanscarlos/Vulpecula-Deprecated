@@ -1,11 +1,14 @@
 package top.lanscarlos.ranales.utils
 
+import taboolib.module.configuration.ConfigFile
+import taboolib.module.configuration.Configuration
 import java.io.File
 
 /**
  * 过滤有效文件
  * */
-fun getFiles(file : File, filter : String = "#") : List<File> {
+fun File.getFiles(file : File = this, filter : String = "#") : List<File> {
+    if (!file.exists()) return listOf()
     return mutableListOf<File>().apply {
         if(file.isDirectory) {
             file.listFiles()?.forEach {
@@ -29,4 +32,8 @@ fun File.deleteDeep() {
         }
     }
     delete()
+}
+
+fun File.toConfig(): ConfigFile {
+    return Configuration.loadFromFile(this)
 }

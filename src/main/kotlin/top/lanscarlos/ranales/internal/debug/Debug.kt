@@ -1,16 +1,13 @@
-package top.lanscarlos.ranales.internal
+package top.lanscarlos.ranales.internal.debug
 
+import taboolib.common.io.deepDelete
 import taboolib.common.platform.function.console
 import taboolib.common.platform.function.getJarFile
-import taboolib.common.platform.function.info
 import taboolib.common.platform.function.releaseResourceFile
 import taboolib.common.util.replaceWithOrder
 import taboolib.module.chat.colored
 import taboolib.module.configuration.Configuration
-import taboolib.module.configuration.util.getMap
-import taboolib.module.configuration.util.getStringColored
 import top.lanscarlos.ranales.Ranales
-import top.lanscarlos.ranales.internal.lisener.ListenerRegistrator
 import top.lanscarlos.ranales.utils.deleteDeep
 import top.lanscarlos.ranales.utils.getFiles
 import java.io.File
@@ -23,18 +20,18 @@ class Debug(
 ) {
 
     val prefix = (config.getString("prefix") ?: "&8[Ranales-Debug&8]&r ").colored()
-    val debug = mutableMapOf<String, Pair<Int, String>>()
+    val debug = mutableMapOf<String, Pair<Int, Any>>()
 
     init {
         config.getConfigurationSection("debug")?.let { section ->
             section.getKeys(false).forEach { key ->
                 section.getConfigurationSection(key)?.let it@{
                     val msg = if (it.isList("message")) {
-                        it.getStringList("message").joinToString(separator = "\n$prefix")
+                        it.getStringList("message").map { msg -> msg.colored() }
                     } else {
-                        it.getString("message")
+                        it.getString("message")?.colored()
                     } ?: return@it
-                    debug[key] = it.getInt("level", 0) to msg.colored()
+                    debug[key] = it.getInt("level", 0) to msg
                 }
             }
         }
@@ -46,7 +43,15 @@ class Debug(
             return
         }
         debug[id]?.let {
-            if (it.first <= level) console().sendMessage(prefix + it.second.replaceWithOrder(*args))
+            if (it.first <= level) {
+                if (it.second is List<*>) {
+                    (it.second as List<*>).forEach { msg ->
+                        console().sendMessage(prefix + msg.toString().replaceWithOrder(*args))
+                    }
+                } else {
+                    console().sendMessage(prefix + it.second.toString().replaceWithOrder(*args))
+                }
+            }
         }
     }
 
@@ -69,13 +74,24 @@ class Debug(
             } ?: return false
         }
 
+        /**
+         * 关闭调试模块并释放资源
+         * */
+        fun remove(name: String) {
+            modules[name]?.file?.deepDelete()
+            modules.remove(name)
+        }
+
+        /**
+         * 关闭所有调试模块并释放资源
+         * */
         fun clear() {
             modules.clear()
             folder.deleteDeep()
         }
 
         fun load() {
-
+            // 加载所有资源文件
             if (resources.isEmpty()) {
                 JarFile(getJarFile()).use { jar ->
                     jar.entries().iterator().forEachRemaining {
@@ -86,16 +102,13 @@ class Debug(
                     }
                 }
             }
-
             enable = Ranales.config.getBoolean("debug-setting.enable")
             level = Ranales.config.getInt("debug-setting.level")
 
             modules.clear()
-            if (folder.exists()) {
-                getFiles(folder).forEach {
-                    val name = it.name.substringBeforeLast('.')
-                    modules[name] = Debug(name, it, Configuration.loadFromFile(it))
-                }
+            folder.getFiles().forEach {
+                val name = it.name.substringBeforeLast('.')
+                modules[name] = Debug(name, it, Configuration.loadFromFile(it))
             }
         }
 

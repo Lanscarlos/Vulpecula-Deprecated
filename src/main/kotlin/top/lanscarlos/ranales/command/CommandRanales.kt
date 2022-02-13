@@ -1,11 +1,7 @@
 package top.lanscarlos.ranales.command
 
-import taboolib.common.platform.ProxyCommandSender
 import taboolib.common.platform.command.CommandBody
 import taboolib.common.platform.command.CommandHeader
-import taboolib.common.platform.command.subCommand
-import taboolib.module.lang.sendLang
-import top.lanscarlos.ranales.Ranales
 
 /**
  * @author Lanscarlos
@@ -15,17 +11,18 @@ import top.lanscarlos.ranales.Ranales
 object CommandRanales {
 
     @CommandBody
-    val reload = subCommand {
-        execute<ProxyCommandSender> { sender, _, _ ->
-            Ranales.reload()
-            sender.sendLang("Plugin-Reloaded")
-        }
-    }
+    val reload = CommandReload.command
 
     @CommandBody
     val script = CommandScript.command
 
     @CommandBody
     val debug = CommandDebug.command
+
+    @CommandBody
+    val registrator = CommandRegistrator.command
+
+    @CommandBody
+    val handler = CommandHandler.command
 
 }

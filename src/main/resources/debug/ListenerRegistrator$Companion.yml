@@ -1,17 +1,26 @@
-prefix: '&8[&cRanales-Debug&8]&r '
+prefix: '&8[Ranales-Debug]&r '
 debug:
   on-active-run:
     level: 2
-    message: 'onActive() was running'
+    message: '&3INFO &8|&r onActive() was running'
   register-listener:
     level: 2
-    message: 'registering listener {0}'
+    message: '&3INFO &8|&r registering listener {0}'
   handler-loading:
     level: 3
-    message: '○ Loading Listener Handler &3{0}'
+    message: '&3INFO &8|&r Loading Listener Handler &3{0}'
   handler-enable:
     level: 3
-    message: '├- Handler &3{0}&r enable &a√'
+    message: '&aFINE &8|&r Handler &3{0}&r enable &a√'
   handler-loaded:
     level: 2
-    message: '└- Handler &3{0}&r loaded successfully！'
+    message: '&aFINE &8|&r Handler &a{0}&r loaded successfully！'
+  trying-to-load-event-class:
+    level: 3
+    message: '&3INFO &8|&r Handler &3{0}&r trying to load class &3{1}'
+  event-class-not-found:
+    level: 3
+    message: '&cERROR &8|&r Handler &c{0}&r class &c{1}&r not found!'
+  event-class-undefined:
+    level: 3
+    message: '&cERROR &8|&r Handler &c{0}&r class undefined!'
