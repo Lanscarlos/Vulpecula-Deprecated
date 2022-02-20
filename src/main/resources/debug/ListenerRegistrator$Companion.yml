@@ -1,4 +1,4 @@
-prefix: '&8[Ranales-Debug]&r '
+prefix: '&8[&cVulpecular-Debug&8]&r '
 debug:
   on-active-run:
     level: 2

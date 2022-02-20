@@ -1,6 +1,6 @@
-# Ranales
+# Vulpecular
 
-Ranales 是免费的，但目前测试阶段暂不提供 jar 文件，你可以通过以下步骤自行构建插件。
+Vulpecular 是免费的，但目前测试阶段暂不提供 jar 文件，你可以通过以下步骤自行构建插件。
 
 **Windows 平台**
 ```shell
@@ -34,7 +34,7 @@ gradlew.bat clean build
 
 # <strong id="Description"> 简介 </strong>
 
-Ranales 是一款基于 [Kether](https://kether.tabooproject.org/) 语法的**拓展**插件
+Vulpecular 是一款基于 [Kether](https://kether.tabooproject.org/) 语法的**拓展**插件
 
 我的初衷是将其开发成为一款可高度自定义的**技能**插件
 
