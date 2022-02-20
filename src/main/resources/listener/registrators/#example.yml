@@ -1,14 +1,17 @@
-entity-damage:
+# 自定义的 id
+# 请不要其他监听模块的 id 重复
+example-listener:
   # 是否启用 [ 默认为 true ]
   enable: false
-  # 别名
+  # 别名 id
+  # 请不要与其他监听模块的 id 重复
   aliases: [ 'entity-damage-event' ]
   # 事件类的完整包名路径
   # Bukkit中的事件详情见 https://bukkit.windit.net/javadoc/org/bukkit/event/package-summary.html
-  class: 'org.bukkit.event.entity.EntityDamageEvent'
-  # 事件优先级 [ 默认为 NORMAL ]
+  class: 'org.bukkit.event.entity.PlayerJoinEvent'
+  # 定义事件监听优先级 [ 默认为 NORMAL ]
   # 优先级越低，越先被处理
-  # 详情见 https://bukkit.windit.net/javadoc/org/bukkit/event/EventPriority.html#MONITOR
+  # 详情见 https://bukkit.windit.net/javadoc/org/bukkit/event/EventPriority.html
   # MONITOR -> 没有修改的事件的优先级应该比这个低
   # LOWEST -> 优先级最低
   # LOW -> 优先级低
@@ -31,7 +34,9 @@ entity-damage:
     kether: |-
       print *preprocessing...
     js: |-
-      args.put("entity.name", entity.getPlayer())
+      args.put("example.arg", event.getPlayer())
+    # 运行脚本文件
+    # 脚本文件位于 ./plugins/Vulpecular/script 文件夹内
     script:
       - 'example.ks'
   # 定义参数

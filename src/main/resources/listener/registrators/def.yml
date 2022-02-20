@@ -1,0 +1,12 @@
+# 监听模块的 id
+# 可自定义 但请不要与其他监听模块 id 相同
+player-quit:
+  # 禁用当前监听模块，[ 默认为 true ]
+  enable: false
+  # 监听模块的别名
+  aliases: [ 'on-quit', 'quit' ]
+  # 定义事件监听优先级 [ 默认为 NORMAL ]
+  priority: 'NORMAL'
+  # [必填] 监听的事件
+  # 这里代表玩家离开服务器事件
+  class: 'org.bukkit.event.player.PlayerQuitEvent'

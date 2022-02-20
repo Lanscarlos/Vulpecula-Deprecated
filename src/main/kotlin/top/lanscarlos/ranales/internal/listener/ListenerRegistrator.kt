@@ -159,7 +159,7 @@ class ListenerRegistrator(
                 ListenerHandler.handlers.clear()
                 if (!folder.exists()) {
                     listOf(
-                        "example.yml",
+                        "#example.yml",
                         "def/player.yml"
                     ).forEach { releaseResourceFile("listener/registrators/$it", true) }
                 }
