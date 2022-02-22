@@ -7,6 +7,7 @@ import taboolib.common.platform.function.console
 import taboolib.common.platform.function.info
 import taboolib.module.configuration.Config
 import taboolib.module.configuration.Configuration
+import taboolib.module.kether.Kether
 import taboolib.module.lang.asLangText
 import taboolib.platform.BukkitPlugin
 import top.lanscarlos.vulpecular.internal.VulpecularScript
@@ -31,15 +32,6 @@ import top.lanscarlos.vulpecular.utils.timing
         test = "org.tabooproject.reflex.Reflex",
         repository = "https://repo.tabooproject.org/repository/releases/",
         transitive = false
-    ),
-    RuntimeDependency(
-        value = "org.jetbrains.kotlin:kotlin-script-util:1.5.10"
-    ),
-    RuntimeDependency(
-        value = "org.jetbrains.kotlin:kotlin-compiler:1.5.10"
-    ),
-    RuntimeDependency(
-        value = "commons-cli:commons-cli:1.4"
     )
 )
 object Vulpecular : Plugin() {

@@ -123,6 +123,7 @@ class ListenerHandler(
                 val start = timing()
                 if (!folder.exists()) {
                     listOf(
+                        "#example.yml",
                         "def.yml"
                     ).forEach { releaseResourceFile("listener/handler/$it", true) }
                 }
