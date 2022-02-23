@@ -15,7 +15,7 @@ object ActionEntityType: ActionEntity() {
 
     override fun parse(reader: QuestReader): Any? = null
 
-    override fun run(frame: ScriptFrame, entity: Entity, args: Any?): Any {
+    override fun run(frame: ScriptFrame, entity: Entity, meta: Any?): Any {
         return entity.type.name.lowercase()
     }
 

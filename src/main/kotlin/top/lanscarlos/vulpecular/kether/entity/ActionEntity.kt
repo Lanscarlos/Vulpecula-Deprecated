@@ -1,13 +1,12 @@
 package top.lanscarlos.vulpecular.kether.entity
 
 import org.bukkit.entity.Entity
-import org.bukkit.event.Event
-import taboolib.common.platform.function.info
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
 import taboolib.module.kether.*
 import taboolib.platform.type.BukkitPlayer
+import top.lanscarlos.vulpecular.utils.variable
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -24,7 +23,7 @@ abstract class ActionEntity {
     /**
      * 运行 Kether 动作
      * */
-    abstract fun run(frame: ScriptFrame, entity: Entity, args: Any?): Any?
+    abstract fun run(frame: ScriptFrame, entity: Entity, meta: Any?): Any?
 
     fun resolve(reader: QuestReader, source: ParsedAction<*>?): ScriptAction<Any?> {
         val args = parse(reader)
@@ -33,7 +32,7 @@ abstract class ActionEntity {
                 val future = CompletableFuture<Any?>()
                 val entity = source?.let {
                     frame.newFrame(it).run<Any?>().get()
-                } ?: frame.variables().get<Any?>("entity").let { if (it.isPresent) it.get() else null } ?: error("Cannot found entity target!")
+                } ?: frame.variable("entity") ?: error("Cannot found entity target!")
                 future.complete(
                     when(entity) {
                         is BukkitPlayer -> run(frame, entity.player, args)
