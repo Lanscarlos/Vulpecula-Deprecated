@@ -1,6 +1,7 @@
 package top.lanscarlos.vulpecular.kether.entity
 
 import org.bukkit.entity.Entity
+import taboolib.common.platform.function.info
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
@@ -54,6 +55,10 @@ abstract class ActionEntity {
             registerActionEntity("type", ActionEntityType)
         }
 
+        fun isAction(name: String): Boolean {
+            return name in actions
+        }
+
         fun getAction(name: String): ActionEntity? {
             return actions[name.lowercase()]
         }
@@ -66,19 +71,21 @@ abstract class ActionEntity {
             return action
         }
 
+        /**
+         * entity type
+         * entity {entity} type
+         * */
         @KetherParser(["entity"], namespace = "vulpecular", shared = true)
         fun ketherParser() = scriptParser {
             it.mark()
-            val entity = it.nextToken().let { token ->
-                if (token.startsWith('&') || token.startsWith("get")) {
-                    it.reset()
-                    it.next(ArgTypes.ACTION)
-                } else {
-                    it.reset()
-                    null
+            var token = it.nextToken()
+            val entity = if (!isAction(token)) {
+                it.reset()
+                it.next(ArgTypes.ACTION).apply {
+                    token = it.nextToken()
                 }
-            }
-            getAction(it.nextToken())?.resolve(it, entity) ?: error("Unknown type of entity action")
+            } else null
+            getAction(token)?.resolve(it, entity) ?: error("Unknown type \"$token\" of entity action")
         }
     }
 }

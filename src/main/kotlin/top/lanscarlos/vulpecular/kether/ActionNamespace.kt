@@ -1,5 +1,6 @@
 package top.lanscarlos.vulpecular.kether
 
+import taboolib.common.platform.function.info
 import taboolib.common.platform.function.warning
 import taboolib.common.reflect.Reflex.Companion.getProperty
 import taboolib.library.kether.SimpleReader
@@ -33,6 +34,8 @@ object ActionNamespace {
             "list" -> {  }
             else -> warning("Unknown type of namespace action!")
         }
-        actionNow { namespace }
+        actionNow {
+            namespace
+        }
     }
 }

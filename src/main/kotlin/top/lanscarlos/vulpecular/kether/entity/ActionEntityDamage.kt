@@ -34,6 +34,7 @@ object ActionEntityDamage: ActionEntity() {
         val meta = arrayOfNulls<ParsedAction<*>>(5)
         meta[0] = reader.next(ArgTypes.ACTION)
         meta[1] = try {
+            reader.mark()
             reader.expect("by")
             reader.next(ArgTypes.ACTION)
         } catch (e: Exception) {
@@ -63,7 +64,7 @@ object ActionEntityDamage: ActionEntity() {
     }
 
     override fun run(frame: ScriptFrame, entity: Entity, meta: Any?): Any? {
-        val data = (meta as? Array<*>)?.map { (it as? ParsedAction<*>)?.let { action -> frame.newFrame(action).run<Any>() } } ?: error("Illegal Meta in \"${this@ActionEntityDamage::class.simpleName}\" Action!")
+        val data = (meta as? Array<*>)?.map { (it as? ParsedAction<*>)?.let { action -> frame.newFrame(action).run<Any>().get() } } ?: error("Illegal Meta in \"${this@ActionEntityDamage::class.simpleName}\" Action!")
         val damage = data[0]?.toString()?.toDouble() ?: error("Illegal value \"damage\" in \"${this@ActionEntityDamage::class.simpleName}\" Action!")
         val damager = data[1] as? Entity ?: (frame.script().sender as? Entity)
         val ignoreArmor = data[2]?.toString()?.equals("true", true) ?: false

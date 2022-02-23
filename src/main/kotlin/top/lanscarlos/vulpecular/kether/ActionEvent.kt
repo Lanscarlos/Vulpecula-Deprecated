@@ -46,14 +46,12 @@ object ActionEvent {
     @KetherParser(["event"], namespace = "vulpecular", shared = true)
     fun parser() = scriptParser {
         it.mark()
-        val event = it.nextToken().let { token ->
-            if (token.startsWith('&') || token.startsWith("get")) {
-                it.reset()
-                it.next(ArgTypes.ACTION)
-            } else {
-                it.reset()
-                null
-            }
+        val event = if (it.nextToken() !in arrayOf("cancel", "isCancelled", "cancelled", "eventName", "name")) {
+            it.reset()
+            it.next(ArgTypes.ACTION)
+        } else {
+            it.reset()
+            null
         }
         it.switch {
             case("cancel") {
