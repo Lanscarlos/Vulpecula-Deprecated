@@ -13,7 +13,7 @@ object SelectorPlayer : Selector() {
         return listOf("name")
     }
 
-    override fun call(frame: ScriptFrame, args: Map<String, Any>): Any? {
+    override fun run(frame: ScriptFrame, args: Map<String, Any>): Any? {
         val name = args["name"] ?: error("Unknown player")
         return Bukkit.getPlayerExact(name.toString())
     }

@@ -1,6 +1,8 @@
 package top.lanscarlos.vulpecular.kether.entity
 
 import org.bukkit.entity.Entity
+import org.bukkit.event.Event
+import taboolib.common.platform.function.info
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
@@ -14,39 +16,31 @@ import java.util.concurrent.CompletableFuture
  * */
 abstract class ActionEntity {
 
-    abstract fun parameters(): List<String>
+    /**
+     * 解析 Kether 语句
+     * */
+    abstract fun parse(reader: QuestReader): Any?
 
-    abstract fun call(frame: ScriptFrame, entity: Entity, args: Map<String, Any> = mapOf()): Any?
+    /**
+     * 运行 Kether 动作
+     * */
+    abstract fun run(frame: ScriptFrame, entity: Entity, args: Any?): Any?
 
-    fun parse(reader: QuestReader, entity: ParsedAction<*>): ScriptAction<Any?> {
-        val actions = mutableListOf<Pair<String, ParsedAction<*>>>().apply {
-            parameters().forEach {
-                add(Pair(it, reader.next(ArgTypes.ACTION)))
-            }
-        }
-        val args = mutableMapOf<String, Any>()
-
+    fun resolve(reader: QuestReader, source: ParsedAction<*>?): ScriptAction<Any?> {
+        val args = parse(reader)
         return object : ScriptAction<Any?>() {
             override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
                 val future = CompletableFuture<Any?>()
-                fun process(entity: Entity) {
-                    if (actions.isNotEmpty()) {
-                        val action = actions.removeFirst()
-                        frame.newFrame(action.second).run<Any>().thenApply { value ->
-                            args[action.first] = value
-                            process(entity)
-                        }
-                    }else {
-                        future.complete(call(frame, entity, args))
-                    }
-                }
-                frame.newFrame(entity).run<Any>().thenApply { entity ->
+                val entity = source?.let {
+                    frame.newFrame(it).run<Any?>().get()
+                } ?: frame.variables().get<Any?>("entity").let { if (it.isPresent) it.get() else null } ?: error("Cannot found entity target!")
+                future.complete(
                     when(entity) {
-                        is BukkitPlayer -> process(entity.player)
-                        is Entity -> process(entity)
+                        is BukkitPlayer -> run(frame, entity.player, args)
+                        is Entity -> run(frame, entity, args)
                         else -> error("Unknown entity type! ${entity::class.qualifiedName}")
                     }
-                }
+                )
                 return future
             }
         }
@@ -74,9 +68,18 @@ abstract class ActionEntity {
         }
 
         @KetherParser(["entity"], namespace = "vulpecular", shared = true)
-        fun parser() = scriptParser {
-            val entity = it.next(ArgTypes.ACTION)
-            getAction(it.nextToken())?.parse(it, entity) ?: error("Unknown type of entity action")
+        fun ketherParser() = scriptParser {
+            it.mark()
+            val entity = it.nextToken().let { token ->
+                if (token.startsWith('&') || token.startsWith("get")) {
+                    it.reset()
+                    it.next(ArgTypes.ACTION)
+                } else {
+                    it.reset()
+                    null
+                }
+            }
+            getAction(it.nextToken())?.resolve(it, entity) ?: error("Unknown type of entity action")
         }
     }
 }

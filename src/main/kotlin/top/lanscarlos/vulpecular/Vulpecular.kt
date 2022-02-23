@@ -20,20 +20,20 @@ import top.lanscarlos.vulpecular.utils.timing
  * @author Lanscarlos
  * @since 2021-11-29 17:20
  * */
-@RuntimeDependencies(
-    RuntimeDependency(
-        value = "org.tabooproject.reflex:analyser:1.0.6",
-        test = "org.tabooproject.reflex.ClassAnalyser",
-        repository = "https://repo.tabooproject.org/repository/releases/",
-        transitive = false
-    ),
-    RuntimeDependency(
-        value = "org.tabooproject.reflex:reflex:1.0.6",
-        test = "org.tabooproject.reflex.Reflex",
-        repository = "https://repo.tabooproject.org/repository/releases/",
-        transitive = false
-    )
-)
+//@RuntimeDependencies(
+//    RuntimeDependency(
+//        value = "org.tabooproject.reflex:analyser:1.0.6",
+//        test = "org.tabooproject.reflex.ClassAnalyser",
+//        repository = "https://repo.tabooproject.org/repository/releases/",
+//        transitive = false
+//    ),
+//    RuntimeDependency(
+//        value = "org.tabooproject.reflex:reflex:1.0.6",
+//        test = "org.tabooproject.reflex.Reflex",
+//        repository = "https://repo.tabooproject.org/repository/releases/",
+//        transitive = false
+//    )
+//)
 object Vulpecular : Plugin() {
 
     val plugin by lazy {

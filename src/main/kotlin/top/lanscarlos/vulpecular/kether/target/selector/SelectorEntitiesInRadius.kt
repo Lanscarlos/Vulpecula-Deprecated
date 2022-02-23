@@ -15,7 +15,7 @@ object SelectorEntitiesInRadius : Selector() {
         return listOf("location", "radius")
     }
 
-    override fun call(frame: ScriptFrame, args: Map<String, Any>): Any? {
+    override fun run(frame: ScriptFrame, args: Map<String, Any>): Any? {
         val radius = args["radius"]?.toString()?.toDouble() ?: 1.0
         val location = when(val it = args["location"]) {
             is taboolib.common.util.Location -> it.toBukkitLocation()

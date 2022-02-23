@@ -18,7 +18,7 @@ abstract class Selector {
 
     abstract fun parameters(): List<String>
 
-    abstract fun call(frame: ScriptFrame, args: Map<String, Any> = mapOf()): Any?
+    abstract fun run(frame: ScriptFrame, args: Map<String, Any> = mapOf()): Any?
 
     fun parse(reader: QuestReader): ScriptAction<Any> {
         val actions = mutableListOf<Pair<String, ParsedAction<*>>>().apply {
@@ -57,7 +57,7 @@ abstract class Selector {
                             process()
                         }
                     }else {
-                        val targets = call(frame, args) ?: return
+                        val targets = run(frame, args) ?: return
                         when(targets) {
                             is Collection<*> -> {
 //                                future.complete(filter?.first?.call(frame, filter.second, targets.filterNotNull()) ?: targets)
@@ -88,7 +88,7 @@ abstract class Selector {
         private val selectors = mutableMapOf<String, Selector>()
 
         init {
-            registerSelector("Self", SelectorSelf)
+            registerSelector("Self", SelectorSender)
             registerSelector("Player", SelectorPlayer)
             registerSelector("EntitiesInRadius", SelectorEntitiesInRadius, "EIR")
         }

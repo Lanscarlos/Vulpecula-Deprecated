@@ -18,7 +18,7 @@ object FilterEntityType: Filter() {
         return reader.next(ArgTypes.listOf(ArgTypes.ACTION)).toMutableList()
     }
 
-    override fun call(frame: ScriptFrame, arg: Any, targets: Collection<Any>, func: (targets: Collection<Any>) -> Collection<Any>): Collection<Any> {
+    override fun run(frame: ScriptFrame, arg: Any, targets: Collection<Any>, func: (targets: Collection<Any>) -> Collection<Any>): Collection<Any> {
         val types = (arg as? List<*>)?.map { it }?.toMutableList() ?: error("Illegal Filter Data!")
         val legalTypes = mutableSetOf<String>()
         val illegalTypes = mutableSetOf<String>()

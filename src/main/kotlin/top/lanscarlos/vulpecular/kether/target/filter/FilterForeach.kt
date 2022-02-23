@@ -29,7 +29,7 @@ object FilterForeach: Filter() {
         }
     }
 
-    override fun call(frame: ScriptFrame, arg: Any, targets: Collection<Any>, func: (targets: Collection<Any>) -> Collection<Any>): Collection<Any> {
+    override fun run(frame: ScriptFrame, arg: Any, targets: Collection<Any>, func: (targets: Collection<Any>) -> Collection<Any>): Collection<Any> {
         val map = arg as? Map<*, *> ?: error("Illegal Filter Data!")
         val key = map["key"]?.toString() ?: "it"
         val condition = map["condition"] as? ParsedAction<*> ?: error("Filter Data condition cannot be null!")

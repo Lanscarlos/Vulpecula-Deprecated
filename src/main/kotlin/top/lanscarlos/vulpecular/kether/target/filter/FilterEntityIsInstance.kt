@@ -17,7 +17,7 @@ object FilterEntityIsInstance: Filter() {
         return reader.next(ArgTypes.ACTION)
     }
 
-    override fun call(frame: ScriptFrame, arg: Any, targets: Collection<Any>, func: (targets: Collection<Any>) -> Collection<Any>): Collection<Any> {
+    override fun run(frame: ScriptFrame, arg: Any, targets: Collection<Any>, func: (targets: Collection<Any>) -> Collection<Any>): Collection<Any> {
         val instances = (arg as? ParsedAction<*>) ?: error("Illegal Filter Data!")
         val future = CompletableFuture<Collection<Any>>()
         frame.newFrame(instances).run<String>().thenApply { instance ->

@@ -14,7 +14,7 @@ abstract class Filter {
 
     abstract fun parse(reader: QuestReader): Any
 
-    abstract fun call(frame: ScriptFrame, arg: Any, targets: Collection<Any>, func: (targets: Collection<Any>) -> Collection<Any>): Collection<Any>
+    abstract fun run(frame: ScriptFrame, arg: Any, targets: Collection<Any>, func: (targets: Collection<Any>) -> Collection<Any>): Collection<Any>
 
     companion object {
 
@@ -41,13 +41,13 @@ abstract class Filter {
         fun parser(reader: QuestReader): List<Pair<Filter, Any>> {
             return mutableListOf<Pair<Filter, Any>>().also {
                 val name = reader.nextToken()
-                it += getFilter(name)?.let { filter -> Pair(filter, filter.parse(reader)) } ?: error("Unknown target filter: $name!")
+                it += getFilter(name)?.let { filter -> filter to filter.parse(reader) } ?: error("Unknown target filter: $name!")
                 fun process() {
                     try {
                         reader.mark()
                         reader.expect("filter")
                         val token = reader.nextToken()
-                        it += getFilter(token)?.let { filter -> Pair(filter, filter.parse(reader)) } ?: error("Unknown target filter: $token!")
+                        it += getFilter(token)?.let { filter -> filter to filter.parse(reader) } ?: error("Unknown target filter: $token!")
                         process()
                     }catch (e: IllegalStateException) {
                         e.printStackTrace()
@@ -61,7 +61,7 @@ abstract class Filter {
 
         fun resolve(frame: ScriptFrame, filters: MutableList<Pair<Filter, Any>>, targets: Collection<Any>): Collection<Any> {
             val filter = filters.removeFirst()
-            return filter.first.call(frame, filter.second, targets) { collection ->
+            return filter.first.run(frame, filter.second, targets) { collection ->
                 if (filters.isNotEmpty()) {
                     resolve(frame, filters, collection)
                 }else {
