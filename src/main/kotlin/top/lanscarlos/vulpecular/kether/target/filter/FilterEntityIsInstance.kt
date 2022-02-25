@@ -5,32 +5,24 @@ import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
 import taboolib.module.kether.ScriptFrame
-import java.util.concurrent.CompletableFuture
 
 /**
  * @author Lanscarlos
  * @since 2021-12-19 10:16
  * */
-object FilterEntityIsInstance: Filter() {
+object FilterEntityIsInstance: ActionFilter() {
 
-    override fun parse(reader: QuestReader): Any {
-        return reader.next(ArgTypes.ACTION)
+    override fun parse(reader: QuestReader): Pair<String, Any> {
+        return "instance" to reader.next(ArgTypes.ACTION)
     }
 
-    override fun run(frame: ScriptFrame, arg: Any, targets: Collection<Any>, func: (targets: Collection<Any>) -> Collection<Any>): Collection<Any> {
-        val instances = (arg as? ParsedAction<*>) ?: error("Illegal Filter Data!")
-        val future = CompletableFuture<Collection<Any>>()
-        frame.newFrame(instances).run<String>().thenApply { instance ->
-            future.complete(
-                func(
-                    targets.filterIsInstance(getClasses(instance.toString()))
-                )
-            )
-        }
-        return future.get()
+    override fun run(frame: ScriptFrame, targets: Collection<Any>, meta: Map<String, Any>): Collection<Any> {
+        val instance = (meta["instance"] as? ParsedAction<*>)?.let { action -> frame.newFrame(action).run<Any>().get() }
+        return targets.filterIsInstance(getClasses(instance.toString()))
     }
 
     private fun getClasses(name: String): Class<*> {
+        if (name.contains(".")) return Class.forName(name)
         return when(name.lowercase()) {
             "AbstractArrow".lowercase() -> AbstractArrow::class.java
             "AbstractHorse".lowercase() -> AbstractHorse::class.java
@@ -182,7 +174,7 @@ object FilterEntityIsInstance: Filter() {
             "Zombie".lowercase() -> Zombie::class.java
             "ZombieHorse".lowercase() -> ZombieHorse::class.java
             "ZombieVillager".lowercase() -> ZombieVillager::class.java
-            else -> Any::class.java
+            else -> Class.forName("org.bukkit.entity.$name")
         }
     }
 }

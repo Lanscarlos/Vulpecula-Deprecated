@@ -1,4 +1,4 @@
-package top.lanscarlos.vulpecular.kether.vector
+package top.lanscarlos.vulpecular.kether
 
 import taboolib.library.kether.ArgTypes
 import taboolib.module.kether.KetherParser

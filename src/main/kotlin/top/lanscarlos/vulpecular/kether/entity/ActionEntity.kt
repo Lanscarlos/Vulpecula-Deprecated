@@ -1,12 +1,14 @@
 package top.lanscarlos.vulpecular.kether.entity
 
 import org.bukkit.entity.Entity
-import taboolib.common.platform.function.info
+import taboolib.common.platform.ProxyPlayer
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
 import taboolib.module.kether.*
 import taboolib.platform.type.BukkitPlayer
+import taboolib.platform.util.toBukkitLocation
+import taboolib.platform.util.toProxyLocation
 import top.lanscarlos.vulpecular.utils.variable
 import java.util.concurrent.CompletableFuture
 

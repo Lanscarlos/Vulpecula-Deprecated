@@ -43,7 +43,7 @@ object ActionEntityDamage: ActionEntity() {
         }
         try {
             reader.mark()
-            reader.expect("wreaderh")
+            reader.expect("with")
             while (true) {
                 reader.mark()
                 when (val arg = reader.expects(

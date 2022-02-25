@@ -4,56 +4,31 @@ import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
 import taboolib.module.kether.ScriptFrame
-import java.util.concurrent.CompletableFuture
+import taboolib.module.kether.expects
 
 /**
  * @author Lanscarlos
  * @since 2021-12-18 19:56
  * */
-object FilterForeach: Filter() {
+object FilterForeach: ActionFilter() {
 
-    /*
-    * target filter {targets} {type} [ {parameter} ]
-    * target filter &targets foreach by i { check entity &i type == *husk }
-    * */
-    override fun parse(reader: QuestReader): Any {
-        return mutableMapOf<String, Any>().also {
-            try {
-                reader.mark()
-                reader.expect("by")
-                it["key"] = reader.nextToken()
-            } catch (e: Exception) {
-                reader.reset()
-            }
-            it["condition"] = reader.next(ArgTypes.ACTION)
+    override fun parse(reader: QuestReader): Pair<String, Any> {
+        return when (val token = reader.expects(
+            "by", "then"
+        )) {
+            "by" -> "key" to reader.next(ArgTypes.ACTION)
+            "then" -> "condition" to reader.next(ArgTypes.ACTION)
+            else -> error("Unknown parameter \"$token\"!")
         }
     }
 
-    override fun run(frame: ScriptFrame, arg: Any, targets: Collection<Any>, func: (targets: Collection<Any>) -> Collection<Any>): Collection<Any> {
-        val map = arg as? Map<*, *> ?: error("Illegal Filter Data!")
-        val key = map["key"]?.toString() ?: "it"
-        val condition = map["condition"] as? ParsedAction<*> ?: error("Filter Data condition cannot be null!")
-        val future = CompletableFuture<Collection<Any>>()
-        val set = targets.toMutableSet()
-        fun process(iterator: MutableIterator<Any>) {
-            if (iterator.hasNext()) {
-                val target = iterator.next()
-                frame.variables()[key] = target
-                frame.newFrame(condition).run<Any>().thenApply { result ->
-                    if (!result.toString().equals("true", true)) iterator.remove()
-                }
-                process(iterator)
-            }else {
-                frame.variables().remove(key)
-                future.complete(
-                    func(
-                        set
-                    )
-                )
-            }
+    override fun run(frame: ScriptFrame, targets: Collection<Any>, meta: Map<String, Any>): Collection<Any> {
+        val key = meta["key"]?.toString() ?: "it"
+        val condition = meta["condition"] as? ParsedAction<*> ?: error("Illegal condition data")
+        return targets.filter {
+            frame.variables()[key] = it
+            frame.newFrame(condition).run<Any>().get().toString().equals("true", true)
         }
-        process(set.iterator())
-        return future.get()
     }
 
 }
