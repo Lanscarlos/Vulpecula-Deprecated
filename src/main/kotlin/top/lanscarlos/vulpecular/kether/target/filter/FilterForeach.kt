@@ -5,11 +5,14 @@ import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
 import taboolib.module.kether.ScriptFrame
 import taboolib.module.kether.expects
+import top.lanscarlos.vulpecular.kether.ActionExpansion
+import top.lanscarlos.vulpecular.kether.ActionExpansionType
 
 /**
  * @author Lanscarlos
  * @since 2021-12-18 19:56
  * */
+@ActionExpansion(ActionExpansionType.FILTER, "foreach")
 object FilterForeach: ActionFilter() {
 
     override fun parse(reader: QuestReader): Pair<String, Any> {

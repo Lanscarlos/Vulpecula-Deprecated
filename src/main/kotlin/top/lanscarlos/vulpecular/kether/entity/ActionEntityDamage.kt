@@ -3,16 +3,14 @@ package top.lanscarlos.vulpecular.kether.entity
 import org.bukkit.entity.Damageable
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
-import org.bukkit.event.Event
-import taboolib.common.platform.function.info
-import taboolib.common.platform.function.warning
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
-import taboolib.module.kether.*
-import taboolib.platform.type.BukkitPlayer
-import top.lanscarlos.vulpecular.utils.iterator
-import java.util.concurrent.CompletableFuture
+import taboolib.module.kether.ScriptFrame
+import taboolib.module.kether.expects
+import taboolib.module.kether.script
+import top.lanscarlos.vulpecular.kether.ActionExpansion
+import top.lanscarlos.vulpecular.kether.ActionExpansionType
 
 /**
  *
@@ -28,7 +26,8 @@ import java.util.concurrent.CompletableFuture
  * @author Lanscarlos
  * @since 2021-12-18 09:05
  * */
-object ActionEntityDamage: ActionEntity() {
+@ActionExpansion(ActionExpansionType.ENTITY, "damage")
+object ActionEntityDamage : ActionEntity() {
 
     override fun parse(reader: QuestReader): Any {
         val meta = arrayOfNulls<ParsedAction<*>>(5)

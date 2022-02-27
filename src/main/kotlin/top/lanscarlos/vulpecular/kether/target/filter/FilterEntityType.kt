@@ -6,11 +6,14 @@ import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
 import taboolib.module.kether.ScriptFrame
+import top.lanscarlos.vulpecular.kether.ActionExpansion
+import top.lanscarlos.vulpecular.kether.ActionExpansionType
 
 /**
  * @author Lanscarlos
  * @since 2021-12-18 15:36
  * */
+@ActionExpansion(ActionExpansionType.FILTER, "type")
 object FilterEntityType: ActionFilter() {
 
     override fun parse(reader: QuestReader): Pair<String, Any> {

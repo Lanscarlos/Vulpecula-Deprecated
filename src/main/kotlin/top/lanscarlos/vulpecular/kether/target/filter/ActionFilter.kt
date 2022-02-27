@@ -46,12 +46,6 @@ abstract class ActionFilter {
 
         private val filters = mutableMapOf<String, ActionFilter>()
 
-        init {
-            registerSelector("IsInstance", FilterEntityIsInstance, "Instance", "Inst")
-            registerSelector("Type", FilterEntityType)
-            registerSelector("Foreach", FilterForeach)
-        }
-
         fun getFilter(name: String): ActionFilter? {
             return filters[name.lowercase()]
         }

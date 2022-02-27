@@ -2,6 +2,7 @@ package top.lanscarlos.vulpecular.kether.entity
 
 import org.bukkit.entity.Entity
 import taboolib.common.platform.ProxyPlayer
+import taboolib.common.platform.function.info
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
@@ -52,11 +53,6 @@ abstract class ActionEntity {
 
         private val actions = mutableMapOf<String, ActionEntity>()
 
-        init {
-            registerActionEntity("damage", ActionEntityDamage)
-            registerActionEntity("type", ActionEntityType)
-        }
-
         fun isAction(name: String): Boolean {
             return name in actions
         }
@@ -66,8 +62,10 @@ abstract class ActionEntity {
         }
 
         fun registerActionEntity(name: String, action: ActionEntity, vararg alias: String): ActionEntity {
+            info("registerActionEntity $name")
             actions[name] = action
             alias.forEach {
+                info("registerActionEntity $name alias -> $it")
                 actions[it.lowercase()] = action
             }
             return action

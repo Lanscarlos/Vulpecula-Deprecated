@@ -5,11 +5,14 @@ import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
 import taboolib.module.kether.ScriptFrame
+import top.lanscarlos.vulpecular.kether.ActionExpansion
+import top.lanscarlos.vulpecular.kether.ActionExpansionType
 
 /**
  * @author Lanscarlos
  * @since 2021-12-19 10:16
  * */
+@ActionExpansion(ActionExpansionType.FILTER, "isInstance", ["instance", "inst"])
 object FilterEntityIsInstance: ActionFilter() {
 
     override fun parse(reader: QuestReader): Pair<String, Any> {

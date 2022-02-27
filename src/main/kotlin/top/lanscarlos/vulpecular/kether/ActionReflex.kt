@@ -1,4 +1,4 @@
-package top.lanscarlos.vulpecular.kether.reflex
+package top.lanscarlos.vulpecular.kether
 
 import org.tabooproject.reflex.ClassAnalyser
 import org.tabooproject.reflex.Reflex.Companion.getProperty

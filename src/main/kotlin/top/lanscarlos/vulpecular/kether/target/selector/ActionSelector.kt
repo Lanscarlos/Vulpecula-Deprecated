@@ -52,12 +52,6 @@ abstract class ActionSelector {
 
         private val selectors = mutableMapOf<String, ActionSelector>()
 
-        init {
-            registerSelector("Self", SelectorSender)
-            registerSelector("Player", SelectorPlayer)
-            registerSelector("EntitiesInRadius", SelectorEntitiesInRadius, "EIR")
-        }
-
         fun getSelector(name: String): ActionSelector? {
             return selectors[name.lowercase()]
         }

@@ -5,11 +5,14 @@ import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
 import taboolib.module.kether.*
+import top.lanscarlos.vulpecular.kether.ActionExpansion
+import top.lanscarlos.vulpecular.kether.ActionExpansionType
 
 /**
  * @author Lanscarlos
  * @since 2021-12-18 09:47
  * */
+@ActionExpansion(ActionExpansionType.FILTER, "Player")
 object SelectorPlayer : ActionSelector() {
 
     override fun parse(reader: QuestReader): Pair<String, Any> {

@@ -6,11 +6,14 @@ import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
 import taboolib.module.kether.*
 import taboolib.platform.util.toBukkitLocation
+import top.lanscarlos.vulpecular.kether.ActionExpansion
+import top.lanscarlos.vulpecular.kether.ActionExpansionType
 
 /**
  * @author Lanscarlos
  * @since 2021-12-18 10:05
  * */
+@ActionExpansion(ActionExpansionType.FILTER, "EntitiesInRadius", ["EIR"])
 object SelectorEntitiesInRadius : ActionSelector() {
 
     /**
