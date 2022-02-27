@@ -34,12 +34,14 @@ class ListenerRegistrator(
     val event: Class<*>,
     val priority: EventPriority,
     val ignoreCancelled: Boolean,
+    val cooldown: Int,
     val runPriority: List<String>,
     val preprocessing: Triple<String?, String?, List<String>>,
     val args: Map<String, String>
 ) {
 
     private var listener: ProxyListener? = null
+    private var record = -1L
 
     /**
      * 启动监听模块
@@ -61,6 +63,14 @@ class ListenerRegistrator(
 
     fun handle(event: Event) {
         if (ignoreCancelled && (event as? Cancellable)?.isCancelled == true) return
+
+        // 冷却机制判断
+        if (cooldown > 0 ) {
+            val time = System.currentTimeMillis()
+            if (record > 0 && time < record + cooldown) return
+            record = time
+        }
+
         debug("show-details-event", event)
         debug("show-details-event-name", event.eventName)
         val args = event.preprocessing(this.args.filter { it.key.endsWith("*") && it.value == "false" }.map { it.key }).also {
@@ -198,6 +208,7 @@ class ListenerRegistrator(
                                 else -> EventPriority.NORMAL
                             }
                             val ignoreCancelled = section.getBoolean("ignore-cancelled", true)
+                            val cooldown = section.getInt("cooldown", -1)
 
                             val runPriority = section.getStringList("preprocessing.run-priority")
                             val preprocessing = Triple(
@@ -207,7 +218,7 @@ class ListenerRegistrator(
                             )
                             val args = section.getMap<String, Any>("args").mapNotNull { if (it.value.toString().isNotEmpty()) it.key to it.value.toString() else null }.toMap()
                             debug("show-details-parameters", args)
-                            val registrator = ListenerRegistrator(key, enable, event, priority, ignoreCancelled, runPriority, preprocessing, args)
+                            val registrator = ListenerRegistrator(key, enable, event, priority, ignoreCancelled, cooldown, runPriority, preprocessing, args)
                             registrators[key] = registrator
                             aliases.forEach { registrators[it] = registrator }
                             debug("handler-loaded", key)
