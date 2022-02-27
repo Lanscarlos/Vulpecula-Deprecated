@@ -8,6 +8,7 @@ import taboolib.module.kether.*
 import taboolib.platform.util.toBukkitLocation
 import top.lanscarlos.vulpecular.kether.ActionExpansion
 import top.lanscarlos.vulpecular.kether.ActionExpansionType
+import top.lanscarlos.vulpecular.utils.toDouble
 
 /**
  * @author Lanscarlos
@@ -19,7 +20,7 @@ object SelectorEntitiesInRadius : ActionSelector() {
     /**
      * sel EIR loc &loc r 10
      * */
-    override fun parse(reader: QuestReader): Pair<String, Any> {
+    override fun parse(reader: QuestReader, meta: Map<String, Any>): Pair<String, Any> {
         return when (val token = reader.expects(
             "location", "loc", "l",
             "radius", "range", "r"
@@ -33,7 +34,7 @@ object SelectorEntitiesInRadius : ActionSelector() {
     override fun run(frame: ScriptFrame, meta: Map<String, Any>): Collection<Entity> {
         val data = meta.mapValues { (it.value as? ParsedAction<*>)?.let { action -> frame.newFrame(action).run<Any>().get() } }
         val location = (data["location"]?.toLocation() ?: frame.script().sender?.toLocation())?.toBukkitLocation() ?: error("Illegal location data!")
-        val radius = data["radius"]?.toString()?.toDouble() ?: error("Illegal radius data!")
+        val radius = data["radius"].toDouble(0.0)
         return location.world?.getNearbyEntities(location, radius, radius, radius) ?: setOf()
     }
 

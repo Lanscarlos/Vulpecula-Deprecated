@@ -3,6 +3,7 @@ package top.lanscarlos.vulpecular.kether.entity
 import org.bukkit.entity.Damageable
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
+import taboolib.common5.Coerce
 import taboolib.library.kether.ArgTypes
 import taboolib.library.kether.ParsedAction
 import taboolib.library.kether.QuestReader
@@ -11,12 +12,15 @@ import taboolib.module.kether.expects
 import taboolib.module.kether.script
 import top.lanscarlos.vulpecular.kether.ActionExpansion
 import top.lanscarlos.vulpecular.kether.ActionExpansionType
+import top.lanscarlos.vulpecular.utils.asDouble
+import top.lanscarlos.vulpecular.utils.toBoolean
+import top.lanscarlos.vulpecular.utils.toDouble
 
 /**
  *
  * entity damage 10
- * entity damage 10 by {damager} with {arg} {value}
- * entity damage 10 with {arg} {value}
+ * entity damage 10 by {damager} with {args...}
+ * entity damage 10 with {args...}
  *
  * args:
  *      ignoreArmor, igArmor, iga, ia -> false 是否无视防御力
@@ -29,7 +33,7 @@ import top.lanscarlos.vulpecular.kether.ActionExpansionType
 @ActionExpansion(ActionExpansionType.ENTITY, "damage")
 object ActionEntityDamage : ActionEntity() {
 
-    override fun parse(reader: QuestReader): Any {
+    override fun parse(reader: QuestReader): Array<ParsedAction<*>?> {
         val meta = arrayOfNulls<ParsedAction<*>>(5)
         meta[0] = reader.next(ArgTypes.ACTION)
         meta[1] = try {
@@ -43,19 +47,9 @@ object ActionEntityDamage : ActionEntity() {
         try {
             reader.mark()
             reader.expect("with")
-            while (true) {
-                reader.mark()
-                when (val arg = reader.expects(
-                    "ignoreArmor", "igArmor", "iga", "ia",
-                    "ignoreImmunreadery", "igIm", "igm", "im",
-                    "knockback", "kb"
-                )) {
-                    "ignoreArmor", "igArmor", "iga", "ia" -> meta[2] = reader.next(ArgTypes.ACTION)
-                    "ignoreImmunreadery", "igIm", "igm", "im" -> meta[3] = reader.next(ArgTypes.ACTION)
-                    "knockback", "kb" -> meta[4] = reader.next(ArgTypes.ACTION)
-                    else -> error("Unknown Arg Type \"$arg\" in \"entreadery damage\" Action!")
-                }
-            }
+            meta[2] = reader.next(ArgTypes.ACTION)
+            meta[3] = reader.next(ArgTypes.ACTION)
+            meta[4] = reader.next(ArgTypes.ACTION)
         } catch (e: Exception) {
             reader.reset()
         }
@@ -63,15 +57,16 @@ object ActionEntityDamage : ActionEntity() {
     }
 
     override fun run(frame: ScriptFrame, entity: Entity, meta: Any?): Any? {
-        val data = (meta as? Array<*>)?.map { (it as? ParsedAction<*>)?.let { action -> frame.newFrame(action).run<Any>().get() } } ?: error("Illegal Meta in \"${this@ActionEntityDamage::class.simpleName}\" Action!")
-        val damage = data[0]?.toString()?.toDouble() ?: error("Illegal value \"damage\" in \"${this@ActionEntityDamage::class.simpleName}\" Action!")
-        val damager = data[1] as? Entity ?: (frame.script().sender as? Entity)
-        val ignoreArmor = data[2]?.toString()?.equals("true", true) ?: false
-        val ignoreImmunity = data[3]?.toString()?.equals("true", true) ?: false
-        val knockback = data[4]?.toString()?.equals("true", true) ?: true
+        if (entity !is Damageable) error("Unknown or Illegal value \"entity\" in \"entity damage\" Action!")
 
-        if (entity !is Damageable) error("Unknown or Illegal value \"entity\" in \"${this@ActionEntityDamage::class.simpleName}\" Action!")
-        if (damage < 0) error("Illegal value \"damage\" in \"${this@ActionEntityDamage::class.simpleName}\" Action!")
+        val data = (meta as? Array<*>)?.map { (it as? ParsedAction<*>)?.let { action -> frame.newFrame(action).run<Any>().get() } } ?: error("Illegal Meta in \"entity damage\" Action!")
+        val damage = data[0].toDouble(0.0)
+        val damager = data[1] as? Entity ?: (frame.script().sender as? Entity)
+        val ignoreArmor = data[2].toBoolean(false)
+        val ignoreImmunity = data[3].toBoolean(false)
+        val knockback = data[4].toBoolean(true)
+
+        if (damage < 0) error("Illegal value \"damage\" in \"entity damage\" Action!")
 
         if (entity is LivingEntity && ignoreImmunity) entity.noDamageTicks = 0
         if (ignoreArmor) {

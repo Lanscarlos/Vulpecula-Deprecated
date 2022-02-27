@@ -12,7 +12,7 @@ import top.lanscarlos.vulpecular.kether.ActionExpansionType
 @ActionExpansion(ActionExpansionType.FILTER, "Sender", ["Self"])
 object SelectorSender : ActionSelector() {
 
-    override fun parse(reader: QuestReader): Pair<String, Any>? = null
+    override fun parse(reader: QuestReader, meta: Map<String, Any>): Pair<String, Any>? = null
 
     override fun run(frame: ScriptFrame, meta: Map<String, Any>): Any? {
         return frame.script().sender

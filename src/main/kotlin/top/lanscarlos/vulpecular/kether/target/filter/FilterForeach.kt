@@ -15,7 +15,7 @@ import top.lanscarlos.vulpecular.kether.ActionExpansionType
 @ActionExpansion(ActionExpansionType.FILTER, "foreach")
 object FilterForeach: ActionFilter() {
 
-    override fun parse(reader: QuestReader): Pair<String, Any> {
+    override fun parse(reader: QuestReader, meta: Map<String, Any>): Pair<String, Any> {
         return when (val token = reader.expects(
             "by", "then"
         )) {

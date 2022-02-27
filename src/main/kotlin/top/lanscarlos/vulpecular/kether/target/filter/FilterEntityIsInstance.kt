@@ -15,7 +15,7 @@ import top.lanscarlos.vulpecular.kether.ActionExpansionType
 @ActionExpansion(ActionExpansionType.FILTER, "isInstance", ["instance", "inst"])
 object FilterEntityIsInstance: ActionFilter() {
 
-    override fun parse(reader: QuestReader): Pair<String, Any> {
+    override fun parse(reader: QuestReader, meta: Map<String, Any>): Pair<String, Any>? {
         return "instance" to reader.next(ArgTypes.ACTION)
     }
 

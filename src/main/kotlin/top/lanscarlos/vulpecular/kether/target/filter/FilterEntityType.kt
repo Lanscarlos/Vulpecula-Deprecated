@@ -16,7 +16,7 @@ import top.lanscarlos.vulpecular.kether.ActionExpansionType
 @ActionExpansion(ActionExpansionType.FILTER, "type")
 object FilterEntityType: ActionFilter() {
 
-    override fun parse(reader: QuestReader): Pair<String, Any> {
+    override fun parse(reader: QuestReader, meta: Map<String, Any>): Pair<String, Any> {
         return "types" to reader.next(ArgTypes.listOf(ArgTypes.ACTION))
     }
 

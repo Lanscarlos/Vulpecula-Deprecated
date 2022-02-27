@@ -10,7 +10,9 @@ import taboolib.module.kether.*
 import taboolib.platform.type.BukkitPlayer
 import taboolib.platform.util.toBukkitLocation
 import taboolib.platform.util.toProxyLocation
+import top.lanscarlos.vulpecular.utils.parse
 import top.lanscarlos.vulpecular.utils.variable
+import java.lang.Exception
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -30,7 +32,7 @@ abstract class ActionEntity {
     abstract fun run(frame: ScriptFrame, entity: Entity, meta: Any?): Any?
 
     fun resolve(reader: QuestReader, source: ParsedAction<*>?): ScriptAction<Any?> {
-        val args = parse(reader)
+        val meta = parse(reader)
         return object : ScriptAction<Any?>() {
             override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
                 val future = CompletableFuture<Any?>()
@@ -39,8 +41,8 @@ abstract class ActionEntity {
                 } ?: frame.variable("entity") ?: error("Cannot found entity target!")
                 future.complete(
                     when(entity) {
-                        is BukkitPlayer -> run(frame, entity.player, args)
-                        is Entity -> run(frame, entity, args)
+                        is BukkitPlayer -> run(frame, entity.player, meta)
+                        is Entity -> run(frame, entity, meta)
                         else -> error("Unknown entity type! ${entity::class.qualifiedName}")
                     }
                 )
@@ -76,7 +78,7 @@ abstract class ActionEntity {
          * entity {entity} type
          * */
         @KetherParser(["entity"], namespace = "vulpecular", shared = true)
-        fun ketherParser() = scriptParser {
+        fun parser() = scriptParser {
             it.mark()
             var token = it.nextToken()
             val entity = if (!isAction(token)) {

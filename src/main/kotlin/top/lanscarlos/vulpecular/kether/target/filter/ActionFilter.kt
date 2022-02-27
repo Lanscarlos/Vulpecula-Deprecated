@@ -6,6 +6,7 @@ import taboolib.module.kether.ScriptAction
 import taboolib.module.kether.ScriptFrame
 import taboolib.module.kether.scriptParser
 import top.lanscarlos.vulpecular.utils.iterator
+import top.lanscarlos.vulpecular.utils.parse
 import java.lang.Exception
 import java.util.concurrent.CompletableFuture
 
@@ -15,25 +16,12 @@ import java.util.concurrent.CompletableFuture
  * */
 abstract class ActionFilter {
 
-    abstract fun parse(reader: QuestReader): Pair<String, Any>?
+    abstract fun parse(reader: QuestReader, meta: Map<String, Any>): Pair<String, Any>?
 
     abstract fun run(frame: ScriptFrame, targets: Collection<Any>, meta: Map<String, Any>): Collection<Any>
 
     fun resolve(reader: QuestReader): ScriptAction<Any> {
-        val meta = mutableMapOf<String, Any>()
-        try {
-            while (true) {
-                reader.mark()
-                val parsed = parse(reader) ?: break
-                if (parsed.first in meta) {
-                    reader.reset()
-                    break
-                }
-                meta[parsed.first] = parsed.second
-            }
-        } catch (e: Exception) {
-            reader.reset()
-        }
+        val meta = reader.parse { it, meta -> parse(it, meta) }
         return object : ScriptAction<Any>() {
             override fun run(frame: ScriptFrame): CompletableFuture<Any> {
                 val targets = frame.iterator() as? Collection<*> ?: error("Illegal targets data!")

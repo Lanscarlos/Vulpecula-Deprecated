@@ -6,6 +6,7 @@ import taboolib.library.kether.QuestReader
 import taboolib.module.kether.*
 import taboolib.platform.util.toProxyLocation
 import top.lanscarlos.vulpecular.utils.iterator
+import top.lanscarlos.vulpecular.utils.parse
 import java.lang.Exception
 import java.util.concurrent.CompletableFuture
 
@@ -19,7 +20,7 @@ abstract class ActionSelector {
      * 自行解析 Kether 语句
      * 并返回相对应的 ParsedAction 或 集合等
      * */
-    abstract fun parse(reader: QuestReader): Pair<String, Any>?
+    abstract fun parse(reader: QuestReader, meta: Map<String, Any>): Pair<String, Any>?
 
     /**
      * 运行 Kether 动作
@@ -27,20 +28,7 @@ abstract class ActionSelector {
     abstract fun run(frame: ScriptFrame, meta: Map<String, Any>): Any?
 
     fun resolve(reader: QuestReader): ScriptAction<Any?> {
-        val meta = mutableMapOf<String, Any>()
-        try {
-            while (true) {
-                reader.mark()
-                val parsed = parse(reader) ?: break
-                if (parsed.first in meta) {
-                    reader.reset()
-                    break
-                }
-                meta[parsed.first] = parsed.second
-            }
-        } catch (e: Exception) {
-            reader.reset()
-        }
+        val meta = reader.parse { it, meta -> parse(it, meta) }
         return object : ScriptAction<Any?>() {
             override fun run(frame: ScriptFrame): CompletableFuture<Any?> {
                 return CompletableFuture.completedFuture(run(frame, meta)?.let { frame.iterator(it) })
@@ -75,7 +63,7 @@ abstract class ActionSelector {
         }
 
         @KetherParser(["selector", "select", "sel"], namespace = "vulpecular", shared = true)
-        fun ketherParser() = scriptParser {
+        fun parser() = scriptParser {
             val token = it.nextToken()
             getSelector(token)?.resolve(it) ?: error("Unknown selector type \"$token\"!")
         }

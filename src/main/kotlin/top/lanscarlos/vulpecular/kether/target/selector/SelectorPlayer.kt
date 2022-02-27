@@ -15,7 +15,7 @@ import top.lanscarlos.vulpecular.kether.ActionExpansionType
 @ActionExpansion(ActionExpansionType.FILTER, "Player")
 object SelectorPlayer : ActionSelector() {
 
-    override fun parse(reader: QuestReader): Pair<String, Any> {
+    override fun parse(reader: QuestReader, meta: Map<String, Any>): Pair<String, Any> {
         reader.expect("name")
         return "name" to reader.next(ArgTypes.ACTION)
     }
