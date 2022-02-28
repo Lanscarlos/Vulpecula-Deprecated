@@ -2,17 +2,19 @@ package top.lanscarlos.vulpecular.internal.listener
 
 import org.bukkit.event.Event
 import taboolib.common.platform.function.console
+import taboolib.common.platform.function.info
 import taboolib.common.platform.function.releaseResourceFile
+import taboolib.library.configuration.ConfigurationSection
+import taboolib.module.configuration.Configuration
 import taboolib.module.kether.printKetherErrorMessage
 import taboolib.module.lang.asLangText
+import taboolib.module.lang.sendLang
 import top.lanscarlos.vulpecular.Vulpecular
 import top.lanscarlos.vulpecular.api.VulpecularAPI.evalJS
 import top.lanscarlos.vulpecular.api.VulpecularAPI.evalKether
 import top.lanscarlos.vulpecular.api.VulpecularAPI.runScript
 import top.lanscarlos.vulpecular.internal.debug.Debug.Companion.debug
-import top.lanscarlos.vulpecular.utils.getFiles
-import top.lanscarlos.vulpecular.utils.timing
-import top.lanscarlos.vulpecular.utils.toConfig
+import top.lanscarlos.vulpecular.utils.*
 import java.io.File
 
 /**
@@ -23,6 +25,7 @@ import java.io.File
  * */
 class ListenerHandler(
     val id: String,
+    val file: File,
     var enable: Boolean,
     val listeners: Set<ListenerRegistrator>,
     val priority: Int,
@@ -121,28 +124,32 @@ class ListenerHandler(
         fun load(): String {
             return try {
                 val start = timing()
-                if (!folder.exists()) {
+                handlers.clear()
+                folder.ifNotExists {
                     listOf(
                         "#example.yml",
                         "def.yml"
                     ).forEach { releaseResourceFile("listener/handler/$it", true) }
-                }
-                handlers.clear()
-                folder.getFiles().map { it.toConfig() }.forEach { config ->
-                    config.getKeys(false).forEach { key ->
-                        config.getConfigurationSection(key)?.let { section ->
-                            val enable = section.getBoolean("enable", true)
-                            val listeners = section.getStringList("listeners").mapNotNull {
-                                ListenerRegistrator.get(it)
-                            }.toSet().also { it.ifEmpty { return@let } }
-                            val priority = section.getInt("priority", 0)
-                            val namespace = section.getStringList("namespace")
-                            val runPriority = section.getStringList("run-priority")
-                            val javascript = section.getString("javascript") ?: section.getString("js")
-                            val kether = section.getString("kether") ?: section.getString("ke") ?: section.getString("ks")
-                            val scripts = section.getStringList("scripts")
-                            handlers[key] = ListenerHandler(key, enable, listeners, priority, namespace, runPriority, javascript, kether, scripts)
+                }.getFiles().forEach { file ->
+                    file.addWatcher {
+                        // 添加文件监听器
+                        val record = timing()
+                        var count = 0
+                        // 清除原有文件的处理器
+                        handlers.filter { this == it.value.file }.forEach {
+                            info("检测到移除 ${it.key}...")
+                            handlers.remove(it.key)
                         }
+                        this.toConfig().forEachSections { key, section ->
+                            buildHandler(this, key, section)?.let {
+                                handlers[key] = it
+                                count += 1
+                            }
+                        }
+                        console().sendLang("Handlers-Load-Automatic", this.name, count, timing(record))
+                    }.toConfig().forEachSections { key, section ->
+                        // 获取所有 section
+                        buildHandler(file, key, section)?.let { handlers[key] = it }
                     }
                 }
                 console().asLangText("Handlers-Load-Succeeded", handlers.size, timing(start)).also {
@@ -154,6 +161,20 @@ class ListenerHandler(
                     console().sendMessage(it)
                 }
             }
+        }
+
+        fun buildHandler(file: File, key: String, section: ConfigurationSection): ListenerHandler? {
+            val enable = section.getBoolean("enable", true)
+            val listeners = section.getStringList("listeners").mapNotNull {
+                ListenerRegistrator.get(it)
+            }.toSet().ifEmpty { return null }
+            val priority = section.getInt("priority", 0)
+            val namespace = section.getStringList("namespace")
+            val runPriority = section.getStringList("run-priority")
+            val javascript = section.getString("javascript") ?: section.getString("js")
+            val kether = section.getString("kether") ?: section.getString("ke") ?: section.getString("ks")
+            val scripts = section.getStringList("scripts")
+            return ListenerHandler(key, file, enable, listeners, priority, namespace, runPriority, javascript, kether, scripts)
         }
     }
 }

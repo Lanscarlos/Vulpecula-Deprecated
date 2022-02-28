@@ -8,7 +8,6 @@ import taboolib.common.util.replaceWithOrder
 import taboolib.module.chat.colored
 import taboolib.module.configuration.Configuration
 import top.lanscarlos.vulpecular.Vulpecular
-import top.lanscarlos.vulpecular.utils.deleteDeep
 import top.lanscarlos.vulpecular.utils.getFiles
 import java.io.File
 import java.util.jar.JarFile
@@ -87,7 +86,7 @@ class Debug(
          * */
         fun clear() {
             modules.clear()
-            folder.deleteDeep()
+            folder.deepDelete()
         }
 
         fun load() {

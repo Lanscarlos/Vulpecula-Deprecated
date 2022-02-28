@@ -8,17 +8,17 @@ import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.ProxyListener
 import taboolib.common.platform.function.*
 import taboolib.common5.compileJS
+import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.util.getMap
 import taboolib.module.kether.printKetherErrorMessage
 import taboolib.module.lang.asLangText
+import taboolib.module.lang.sendLang
 import top.lanscarlos.vulpecular.Vulpecular
 import top.lanscarlos.vulpecular.api.VulpecularAPI.evalJS
 import top.lanscarlos.vulpecular.api.VulpecularAPI.evalKether
 import top.lanscarlos.vulpecular.api.VulpecularAPI.runScript
 import top.lanscarlos.vulpecular.internal.debug.Debug.Companion.debug
-import top.lanscarlos.vulpecular.utils.getFiles
-import top.lanscarlos.vulpecular.utils.timing
-import top.lanscarlos.vulpecular.utils.toConfig
+import top.lanscarlos.vulpecular.utils.*
 import java.io.File
 import javax.script.SimpleBindings
 
@@ -30,8 +30,10 @@ import javax.script.SimpleBindings
  * */
 class ListenerRegistrator(
     val id: String,
+    val file: File,
     var enable: Boolean,
     val event: Class<*>,
+    val aliases: List<String>,
     val priority: EventPriority,
     val ignoreCancelled: Boolean,
     val cooldown: Int,
@@ -166,61 +168,38 @@ class ListenerRegistrator(
             return try {
                 val start = timing()
                 ListenerHandler.handlers.clear()
-                if (!folder.exists()) {
-                    listOf(
-                        "#example.yml",
-                        "def.yml"
-                    ).forEach { releaseResourceFile("listener/registrators/$it", true) }
-                }
                 if (registrators.isNotEmpty()) {
                     registrators.values.toSet().filter { it.enable }.forEach {
                         it.unregister()
                     }
                     registrators.clear()
                 }
-                folder.getFiles().map { it.toConfig() }.forEach { config ->
-                    config.getKeys(false).forEach { key ->
-                        config.getConfigurationSection(key)?.let { section ->
-                            debug("handler-loading", key)
-                            val enable = section.getBoolean("enable", true)
-                            val event = section.getString("class")?.let event@{
-                                try {
-                                    debug("trying-to-load-event-class", key, it)
-                                    Class.forName(it)
-                                } catch (e: ClassNotFoundException) {
-                                    debug("event-class-not-found", key, it)
-                                    return@let
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
-                                    return@let
-                                }
-                            } ?: let event@{
-                                debug("event-class-undefined", key)
-                                return@let
+                folder.ifNotExists {
+                    listOf(
+                        "#example.yml",
+                        "def.yml"
+                    ).forEach { releaseResourceFile("listener/registrators/$it", true) }
+                }.getFiles().forEach { file ->
+                    file.addWatcher {
+                        val record = timing()
+                        var count = 0
+                        // 清除原有文件的处理器
+                        registrators.values.toSet().filter { this == it.file }.forEach {
+                            info("检测到移除 ${it.id}...")
+                            it.unregister()
+                            registrators.remove(it.id)
+                        }
+                        this.toConfig().forEachSections { key, section ->
+                            buildRegistrator(this, key, section)?.let {
+                                registrators[key] = it
+                                count += 1
                             }
-                            val aliases = section.getStringList("aliases")
-                            val priority = when(section.getString("priority")?.uppercase()) {
-                                "MONITOR" -> EventPriority.MONITOR
-                                "LOWEST" -> EventPriority.LOWEST
-                                "LOW" -> EventPriority.LOW
-                                "HIGH" -> EventPriority.HIGH
-                                "HIGHEST" -> EventPriority.HIGHEST
-                                else -> EventPriority.NORMAL
-                            }
-                            val ignoreCancelled = section.getBoolean("ignore-cancelled", true)
-                            val cooldown = section.getInt("cooldown", -1)
-
-                            val runPriority = section.getStringList("preprocessing.run-priority")
-                            val preprocessing = Triple(
-                                section.getString("preprocessing.javascript") ?: section.getString("preprocessing.js"),
-                                section.getString("preprocessing.kether") ?: section.getString("preprocessing.ke") ?: section.getString("preprocessing.ks"),
-                                section.getStringList("preprocessing.scripts")
-                            )
-                            val args = section.getMap<String, Any>("args").mapNotNull { if (it.value.toString().isNotEmpty()) it.key to it.value.toString() else null }.toMap()
-                            debug("show-details-parameters", args)
-                            val registrator = ListenerRegistrator(key, enable, event, priority, ignoreCancelled, cooldown, runPriority, preprocessing, args)
+                        }
+                        console().sendLang("Registrators-Load-Automatic", file.name, count, timing(record))
+                    }.toConfig().forEachSections { key, section ->
+                        buildRegistrator(file, key, section)?.let { registrator ->
                             registrators[key] = registrator
-                            aliases.forEach { registrators[it] = registrator }
+                            registrator.aliases.forEach { registrators[it] = registrator }
                             debug("handler-loaded", key)
                         }
                     }
@@ -249,6 +228,47 @@ class ListenerRegistrator(
             debug("on-active-run")
             // 注册事件
             registerAll()
+        }
+
+        fun buildRegistrator(file: File, key: String, section: ConfigurationSection): ListenerRegistrator? {
+            debug("handler-loading", key)
+            val enable = section.getBoolean("enable", true)
+            val event = section.getString("class")?.let event@{
+                try {
+                    debug("trying-to-load-event-class", key, it)
+                    Class.forName(it)
+                } catch (e: ClassNotFoundException) {
+                    debug("event-class-not-found", key, it)
+                    return null
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    return null
+                }
+            } ?: let event@{
+                debug("event-class-undefined", key)
+                return null
+            }
+            val aliases = section.getStringList("aliases")
+            val priority = when(section.getString("priority")?.uppercase()) {
+                "MONITOR" -> EventPriority.MONITOR
+                "LOWEST" -> EventPriority.LOWEST
+                "LOW" -> EventPriority.LOW
+                "HIGH" -> EventPriority.HIGH
+                "HIGHEST" -> EventPriority.HIGHEST
+                else -> EventPriority.NORMAL
+            }
+            val ignoreCancelled = section.getBoolean("ignore-cancelled", true)
+            val cooldown = section.getInt("cooldown", -1)
+
+            val runPriority = section.getStringList("preprocessing.run-priority")
+            val preprocessing = Triple(
+                section.getString("preprocessing.javascript") ?: section.getString("preprocessing.js"),
+                section.getString("preprocessing.kether") ?: section.getString("preprocessing.ke") ?: section.getString("preprocessing.ks"),
+                section.getStringList("preprocessing.scripts")
+            )
+            val args = section.getMap<String, Any>("args").mapNotNull { if (it.value.toString().isNotEmpty()) it.key to it.value.toString() else null }.toMap()
+            debug("show-details-parameters", args)
+            return ListenerRegistrator(key, file, enable, event, aliases, priority, ignoreCancelled, cooldown, runPriority, preprocessing, args)
         }
     }
 }

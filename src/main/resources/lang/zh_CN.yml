@@ -7,13 +7,15 @@ Config-Reload-Succeeded: '&8[&3Vul&bpecular&8] &a良好 &8| &7重载 Config.yml 
 Config-Reload-Failed:
   - '&8[&3Vul&bpecular&8] &c错误 &8|&7 Config.yml 加载失败！'
   - '&8[&3Vul&bpecular&8] &c错误 &8|&7 {0}'
-Registrators-Load-Succeeded: '&8[&3Vul&bpecular&8] &a良好 &8| &7成功加载 &a{0}&7 个监听器！ &8({1} ms)'
+Registrators-Load-Automatic: '&8[&3Vul&bpecular&8] &a良好 &8| &7自动加载 &a{0}&7 文件，共 &a{1}&7 个监听模块！ &8({2} ms)'
+Registrators-Load-Succeeded: '&8[&3Vul&bpecular&8] &a良好 &8| &7成功加载 &a{0}&7 个监听模块！ &8({1} ms)'
 Registrators-Load-Failed:
-  - '&8[&3Vul&bpecular&8] &c错误 &8|&7 监听器加载失败！'
+  - '&8[&3Vul&bpecular&8] &c错误 &8|&7 监听模块加载失败！'
   - '&8[&3Vul&bpecular&8] &c错误 &8|&7 {0}'
-Handlers-Load-Succeeded: '&8[&3Vul&bpecular&8] &a良好 &8| &7成功加载 &a{0}&7 个处理器！ &8({1} ms)'
+Handlers-Load-Automatic: '&8[&3Vul&bpecular&8] &a良好 &8| &7自动加载 &a{0}&7 文件，共 &a{1}&7 个处理模块！ &8({2} ms)'
+Handlers-Load-Succeeded: '&8[&3Vul&bpecular&8] &a良好 &8| &7成功加载 &a{0}&7 个处理模块！ &8({1} ms)'
 Handlers-Load-Failed:
-  - '&8[&3Vul&bpecular&8] &c错误 &8|&7 处理器加载失败！'
+  - '&8[&3Vul&bpecular&8] &c错误 &8|&7 处理模块加载失败！'
   - '&8[&3Vul&bpecular&8] &c错误 &8|&7 {0}'
 Scripts-Load-Succeeded: '&8[&3Vul&bpecular&8] &a良好 &8| &7成功加载 &a{0}&7 个脚本！ &8({1} ms)'
 Scripts-Load-Failed:
