@@ -24,7 +24,7 @@ object CommandReload {
     }
 
     private val config: CommandBuilder.CommandComponentLiteral.() -> Unit = {
-        execute<ProxyCommandSender> { sender, _, _ ->
+        execute<CommandSender> { sender, _, _ ->
             Vulpecular.reloadConfig().let {
                 if (sender is Player) sender.sendMessage(it)
             }
@@ -32,7 +32,7 @@ object CommandReload {
     }
 
     private val registrator: CommandBuilder.CommandComponentLiteral.() -> Unit = {
-        execute<ProxyCommandSender> { sender, _, _ ->
+        execute<CommandSender> { sender, _, _ ->
             ListenerRegistrator.load(true).let {
                 if (sender is Player) sender.sendMessage(it)
             }
@@ -40,7 +40,7 @@ object CommandReload {
     }
 
     private val handler: CommandBuilder.CommandComponentLiteral.() -> Unit = {
-        execute<ProxyCommandSender> { sender, _, _ ->
+        execute<CommandSender> { sender, _, _ ->
             ListenerHandler.load().let {
                 if (sender is Player) sender.sendMessage(it)
             }
@@ -48,7 +48,7 @@ object CommandReload {
     }
 
     private val script: CommandBuilder.CommandComponentLiteral.() -> Unit = {
-        execute<ProxyCommandSender> { sender, _, _ ->
+        execute<CommandSender> { sender, _, _ ->
             VulpecularScript.load().let {
                 if (sender is Player) sender.sendMessage(it)
             }

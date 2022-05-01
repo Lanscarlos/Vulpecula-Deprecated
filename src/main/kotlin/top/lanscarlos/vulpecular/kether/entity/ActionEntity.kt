@@ -64,10 +64,8 @@ abstract class ActionEntity {
         }
 
         fun registerActionEntity(name: String, action: ActionEntity, vararg alias: String): ActionEntity {
-            info("registerActionEntity $name")
             actions[name] = action
             alias.forEach {
-                info("registerActionEntity $name alias -> $it")
                 actions[it.lowercase()] = action
             }
             return action

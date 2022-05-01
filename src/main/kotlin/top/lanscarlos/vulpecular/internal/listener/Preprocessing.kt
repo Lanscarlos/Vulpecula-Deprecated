@@ -6,7 +6,9 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
 import org.bukkit.event.Event
+import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockEvent
+import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityEvent
 import org.bukkit.event.hanging.HangingEvent
 import org.bukkit.event.inventory.InventoryEvent
@@ -22,15 +24,21 @@ import org.bukkit.inventory.Inventory
  * */
 fun Event.preprocessing(filter: Collection<String>): MutableMap<String, Any?> {
     if ("*" in filter) return mutableMapOf()
-    val args = if ("event*" in filter) mutableMapOf()
-    else if ("event.*" in filter) mutableMapOf<String, Any?>("event" to this)
-    else mutableMapOf<String, Any?>(
-        "event" to this,
-        "event.name" to this.eventName,
-        "event.eventName" to this.eventName,
-        "event.isAsynchronous" to this.isAsynchronous,
-        "event.isCancelled" to ((this as? Cancellable)?.isCancelled ?: false)
-    )
+
+    val args = if ("event*" in filter) {
+        mutableMapOf()
+    } else if ("event.*" in filter) {
+        mutableMapOf<String, Any?>("event" to this)
+    } else {
+        mutableMapOf<String, Any?>(
+            "event" to this,
+            "event.name" to this.eventName,
+            "event.eventName" to this.eventName,
+            "event.isAsynchronous" to this.isAsynchronous,
+            "event.isCancelled" to ((this as? Cancellable)?.isCancelled ?: false)
+        )
+    }
+
     when (this) {
         is BlockEvent -> preprocessing(args, filter)
         is EntityEvent -> preprocessing(args, filter)
@@ -102,6 +110,10 @@ private fun Player.preprocessing(args: MutableMap<String, Any?>, filter: Collect
 fun BlockEvent.preprocessing(args: MutableMap<String, Any?>, filter: Collection<String>) {
     block.preprocessing(args, filter)
     if ("event*" in filter || "event.*" in filter) return
+    when (this) {
+        is BlockBreakEvent -> this.player.preprocessing(args, filter)
+        is BlockPlaceEvent -> this.player.preprocessing(args, filter)
+    }
 }
 
 fun EntityEvent.preprocessing(args: MutableMap<String, Any?>, filter: Collection<String>) {

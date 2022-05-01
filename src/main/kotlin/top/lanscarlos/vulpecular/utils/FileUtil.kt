@@ -1,15 +1,12 @@
 package top.lanscarlos.vulpecular.utils
 
-import taboolib.common.platform.function.info
 import taboolib.common5.FileWatcher
 import taboolib.library.configuration.ConfigurationSection
 import taboolib.module.configuration.ConfigFile
 import taboolib.module.configuration.Configuration
-import top.lanscarlos.vulpecular.internal.listener.ListenerHandler
 import java.io.File
-import java.security.Key
 
-fun File.ifNotExists(func: ((file: File) -> Unit)): File {
+inline fun File.ifNotExists(func: ((file: File) -> Unit)): File {
     if (!exists()) func(this)
     return this
 }
@@ -37,7 +34,7 @@ fun File.toConfig(): ConfigFile {
 /**
  * 加载 Config 下所有 Section 内容
  * */
-fun Configuration.forEachSections(func: ((key: String, section: ConfigurationSection) -> Unit)) {
+inline fun Configuration.forEachSections(func: ((key: String, section: ConfigurationSection) -> Unit)) {
     getKeys(false).forEach { key ->
         getConfigurationSection(key)?.let { section ->
             func(key, section)
@@ -48,11 +45,11 @@ fun Configuration.forEachSections(func: ((key: String, section: ConfigurationSec
 /**
  * 加载该目录下所有子文件的 Section 内容
  * */
-fun File.deepSections(func: ((file: File, key: String, section: ConfigurationSection) -> Unit)) {
+inline fun File.deepSections(crossinline func: ((file: File, key: String, section: ConfigurationSection) -> Unit)) {
     this.getFiles().forEach { it.toConfig().forEachSections { key, section -> func(it, key, section) } }
 }
 
-fun File.addWatcher(runFirst: Boolean = false, func: (File.() -> Unit)): File {
+inline fun File.addWatcher(runFirst: Boolean = false, crossinline func: (File.() -> Unit)): File {
     if (FileWatcher.INSTANCE.hasListener(this)) return this
     FileWatcher.INSTANCE.addSimpleListener(this, { func(this) }, runFirst)
     return this

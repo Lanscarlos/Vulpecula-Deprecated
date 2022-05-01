@@ -102,7 +102,7 @@ class ListenerRegistrator(
         }
         // 事件已被取消
         if (ignoreCancelled && (event as? Cancellable)?.isCancelled == true) return
-        ListenerHandler.handle(this, event, args)
+        ListenerHandler.handle(this, event, parameters)
     }
 
     fun runJavaScript(event: Event, args: Map<String, Any?>) {
